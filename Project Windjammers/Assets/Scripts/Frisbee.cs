@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Frisbee
+public class Frisbee : MonoBehaviour
 {
 
     private Vector2 position;

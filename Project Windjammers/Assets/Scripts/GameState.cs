@@ -3,23 +3,24 @@ using UnityEngine;
 
 public class GameState : MonoBehaviour
 {
+
+
+    public static GameState Instance;
     
-    public static int timer;
-    public static int setCurrent;
+    private int timer;
+    private int setCurrent;
     
-    public static Joueur j1;
-    public static Joueur j2;
+    public Joueur j1;
+    public Joueur j2;
     
-    public static Frisbee frisbee;
-    
-    public static GameState gameState;
-    private static GameManager gameManager;
+ //   public Frisbee frisbee;
+
+    private GameManager gameManager;
     
     
     private void Awake()
     {
-        gameState = this;
-        
+        Instance = this;
         
     }
 }
