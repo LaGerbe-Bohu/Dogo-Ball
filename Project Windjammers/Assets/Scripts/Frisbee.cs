@@ -24,7 +24,7 @@ public class Frisbee: MonoBehaviour
 
     private void FixedUpdate()
     {
-        frisbeeBody.velocity += direction.normalized*Time.fixedDeltaTime*30;
+        frisbeeBody.transform.position += (Vector3)direction.normalized*Time.fixedDeltaTime*30;
         
     }
 
@@ -32,26 +32,38 @@ public class Frisbee: MonoBehaviour
     {
         if (collision.CompareTag("TopWall"))
         {
-            Vector2 newdir = new Vector2(frisbeeBody.velocity.x, -frisbeeBody.velocity.y);
-            newdir = Vector2.ClampMagnitude(newdir, 15);
-            frisbeeBody.velocity = newdir;
+            
             direction = new Vector2(direction.x, -direction.y);
         }
 
         if (collision.CompareTag("BottomWall"))
         {
-            Vector2 newdir = new Vector2(frisbeeBody.velocity.x, -frisbeeBody.velocity.y);
-            newdir = Vector2.ClampMagnitude(newdir, 15);
-            frisbeeBody.velocity = newdir;
+            
             direction = new Vector2(direction.x, -direction.y);
         }
 
-        if (collision.CompareTag("Player"))
-        {
-            frisbeeBody.velocity = new Vector2(0, 0);
-            direction = new Vector2(0, 0);
-        }
+        
     }
 
+    public Vector2 getPosition()
+    {
+        return this.position;
+    }
+
+    public Vector2 GetDirection()
+    {
+        return this.direction;
+    }
+    
+    public void setPosition(Vector2 pos)
+    {
+        this.position = pos;
+    }
+    public void setDirection(Vector2 dir)
+    {
+        this.direction = dir;
+    }
+
+    
 
 }
