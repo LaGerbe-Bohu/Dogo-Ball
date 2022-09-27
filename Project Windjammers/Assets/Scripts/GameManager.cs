@@ -21,18 +21,38 @@ public class GameManager : MonoBehaviour
                
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
                 MovePlayer(gameState.j1);
-                RandomMove(gameState.j2);
+        }
+
+        private void FixedUpdate()
+        {
+             
+               // RandomMove(gameState.j2);
         }
 
         private void MovePlayer(Joueur joueur)
         {
-                joueur.setDirection(new Vector2(Input.GetAxisRaw("Horizontal"),
-                        Input.GetAxisRaw("Vertical")));
+                float v = Input.GetAxisRaw("Vertical") ;
+                float y = joueur.transform.position.y;
+                
+                float h = Input.GetAxisRaw("Horizontal");
+                float x = joueur.transform.position.x;
+                                        
+                joueur.setDirection( new Vector2( 
+                        h * ( (x <= -20 && h<0) || (x >= -1.5 && h>0) ? 0:1) ,
+                        v* ( (y >= 8.66f && v>0) || (y <= -8.20f && v<0)  ? 0:1))
+                );
+                
+                
+                
 
+                Debug.Log(  (x <= -20.66f) +"&&"+ (h<0));
                 joueur.transform.position += (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * Time.deltaTime;
+
+             
+                
         }
 
         private void RandomMove(Joueur joueur)
