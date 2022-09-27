@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
              
                 
         }
-
+        
         IEnumerator RandomMove(Joueur joueur, bool f)
         {
                 float counter = Random.Range(0.1f,0.6f);
