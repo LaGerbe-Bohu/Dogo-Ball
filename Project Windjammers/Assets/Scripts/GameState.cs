@@ -12,6 +12,9 @@ public class GameState : MonoBehaviour
     
     public Joueur j1;
     public Joueur j2;
+
+    public static int J1set;
+    public static int J2set;
     
    public Frisbee frisbee;
 
@@ -25,7 +28,10 @@ public class GameState : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        
+
+        j1.getScore().setCount = J1set;
+        j2.getScore().setCount = J2set;
+
     }
 
     private void FixedUpdate()

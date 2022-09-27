@@ -10,15 +10,20 @@ public class Party : MonoBehaviour
     public TMP_Text player2score;
     public TMP_Text countdowntxt;
     public float roundTime;
-    public Score j1;
-    public Score j2;
+    private Score j1;
+    private Score j2;
     private float countdown;
     private float gameTime;
     private bool game;
     private GameObject g;
+
+    private GameState gameState;
     // Start is called before the first frame update
     void Start()
     {
+        gameState = GameState.Instance;
+        j1 = gameState.j1.getScore();
+        j2 = gameState.j2.getScore();
         gameTime = roundTime;
         game = false;
         countdown = 4;
@@ -34,7 +39,7 @@ public class Party : MonoBehaviour
     {
         if (game) {
              if (gameTime > 0) {
-            gameTime -= Time.deltaTime;
+            gameTime -= Time.deltaTime*4f;
             }
             else {
                 gameTime = 0;

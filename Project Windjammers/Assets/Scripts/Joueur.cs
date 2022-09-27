@@ -41,7 +41,7 @@ public class Joueur : MonoBehaviour
     private void Start()
     {
         rigidbody2D = this.GetComponent<Rigidbody2D>();
-        score = this.GetComponent<Score>();
+       
     }
     
     

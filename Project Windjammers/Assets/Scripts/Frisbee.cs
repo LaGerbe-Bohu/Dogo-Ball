@@ -58,7 +58,7 @@ public class Frisbee: MonoBehaviour
         }
         else direction = (gameState.j2.transform.position - this.transform.position).normalized;
         
-        direction = (gameState.j1.transform.position - this.transform.position).normalized;
+       
     }
     
 
