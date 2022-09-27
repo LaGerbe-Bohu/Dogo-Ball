@@ -1008,6 +1008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6004f044e74ae764aad5c5c90bba7792, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score: {fileID: 882184791}
   moveSpeed: 10
 --- !u!212 &882184788
 SpriteRenderer:
@@ -1303,6 +1304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6004f044e74ae764aad5c5c90bba7792, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score: {fileID: 955130787}
   moveSpeed: 10
 --- !u!114 &955130787
 MonoBehaviour:

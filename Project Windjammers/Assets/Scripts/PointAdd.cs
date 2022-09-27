@@ -10,11 +10,14 @@ public class PointAdd : MonoBehaviour
     private Score scoreJ1;
     private Score scoreJ2;
     private Vector3 initialposf;
+
+    private GameState gameState;
     // Start is called before the first frame update
     void Start()
     {
-        scoreJ1 = GameObject.Find("Player 1").GetComponent<Score>();
-        scoreJ2 = GameObject.Find("Player 2").GetComponent<Score>();
+        gameState = GameState.Instance;
+        scoreJ1 = gameState.j1.getScore();
+        scoreJ2 = gameState.j2.getScore();
         initialposf = freesbee.position;
     }
 

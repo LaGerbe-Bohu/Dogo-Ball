@@ -6,10 +6,16 @@ public class Joueur : MonoBehaviour
 {
     private Vector2 position;
     private Vector2 direction;
-    private Score score;
+    public Score score;
 
     public float moveSpeed;
 
+
+    public Score getScore()
+    {
+        return this.score;
+    }
+    
     public  void setDirection(Vector2 dir)
     {
         this.direction = dir;   
