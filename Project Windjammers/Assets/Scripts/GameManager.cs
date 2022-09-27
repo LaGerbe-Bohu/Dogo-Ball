@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using UnityEngine;
-using Random = System.Random;
+using Random = UnityEngine.Random;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -18,12 +20,20 @@ public class GameManager : MonoBehaviour
         private void Start()
         {
                 gameState = GameState.Instance;
+           
                
         }
 
         private void Update()
         {
                 MovePlayer(gameState.j1);
+
+                if (Input.GetKeyUp(KeyCode.A))
+                { 
+                        StartCoroutine( RandomMove(gameState.j2,true)); 
+                       //RandomMove(gameState.j2);
+                }
+                
         }
 
         private void FixedUpdate()
@@ -31,7 +41,8 @@ public class GameManager : MonoBehaviour
              
                // RandomMove(gameState.j2);
         }
-
+        
+        
         private void MovePlayer(Joueur joueur)
         {
                 float v = Input.GetAxisRaw("Vertical") ;
@@ -49,17 +60,76 @@ public class GameManager : MonoBehaviour
                 
 
                 Debug.Log(  (x <= -20.66f) +"&&"+ (h<0));
-                joueur.transform.position += (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * Time.deltaTime;
+                joueur.transform.position += (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f;
 
              
                 
         }
 
-        private void RandomMove(Joueur joueur)
+        IEnumerator RandomMove(Joueur joueur, bool f)
         {
-                
+                float counter = Random.Range(0.1f,0.6f);
+                joueur.setDirection(new Vector2(Random.Range(-1f,1f), Random.Range(-1f,1f)));
+
+                while (counter >0)
+                {
+                        counter -= 0.02f;
+                        
+                        joueur.transform.position += (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ;
+
+                        CollapaseJ2(joueur);
+                        
+                        yield return new WaitForEndOfFrame();
+                }
+                StartCoroutine( RandomMove(gameState.j2,true)); 
         }
 
+        private void RandomMove(Joueur joueur)
+        {
+                float counter = Random.Range(0.1f,0.4f);
+                joueur.setDirection(new Vector2(Random.Range(-1f,1f), Random.Range(-1f,1f)));
+
+                while (counter >0)
+                {
+                        counter -= 0.02f;
+                        
+                        joueur.transform.position += (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f;
+                        
+                }
+                
+
+        }
+
+
+
+        private void CollapaseJ2(Joueur joueur)
+        {
+                float x = joueur.transform.position.x;
+                float y = joueur.transform.position.y;
+
+                if (x > 20)
+                {
+                        joueur.transform.position = new Vector3(20,joueur.transform.position.y,0);
+                }
+                
+                if (x < 1)
+                {
+                        joueur.transform.position = new Vector3(1,joueur.transform.position.y,0);
+                }
+                
+                if (y > 8.66)
+                {
+                        joueur.transform.position = new Vector3(joueur.transform.position.x,8.66f,0);
+                }
+                
+                if (y < -8.2f)
+                {
+                        joueur.transform.position = new Vector3(joueur.transform.position.x,-8.2f,0);
+                }
+
+                
+                
+        }
         
         
         
