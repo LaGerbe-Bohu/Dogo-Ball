@@ -16,15 +16,15 @@ public class Frisbee: MonoBehaviour
         float random = Random.Range(0, 10);
         if (random > 5)
         {
-            direction = new Vector2(1, 5);
+            direction = new Vector2(9.5f, 5);
         }
-        else direction = new Vector2(-1, 5);
+        else direction = new Vector2(-9.5f, 5);
 
     }
 
     private void FixedUpdate()
     {
-        frisbeeBody.transform.position += (Vector3)direction.normalized*Time.fixedDeltaTime*30;
+        frisbeeBody.transform.position += (Vector3)direction.normalized*0.02f*30;
         
         
     }
