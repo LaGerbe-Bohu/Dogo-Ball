@@ -13,7 +13,7 @@ public class GameState : MonoBehaviour
     public Joueur j1;
     public Joueur j2;
     
- //   public Frisbee frisbee;
+   public Frisbee frisbee;
 
     private GameManager gameManager;
     

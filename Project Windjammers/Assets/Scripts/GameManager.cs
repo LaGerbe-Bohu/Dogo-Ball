@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
                 joueur.setDirection(new Vector2(Input.GetAxisRaw("Horizontal"),
                         Input.GetAxisRaw("Vertical")));
 
-                joueur.getRigibody2D().velocity = joueur.getDirection().normalized * joueur.moveSpeed;
+                joueur.transform.position += (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * Time.deltaTime;
         }
 
         private void RandomMove(Joueur joueur)
