@@ -24,6 +24,9 @@ public class Party : MonoBehaviour
         countdown = 4;
         g = GameObject.Find("Gameplay");
         g.SetActive(false);
+        player1score.enabled=false;
+        player2score.enabled=false;
+        gameTimetxt.enabled=false;
     }
 
     // Update is called once per frame
@@ -43,10 +46,18 @@ public class Party : MonoBehaviour
         else {
             if (countdown > 0) {
                 countdown -= Time.deltaTime;
-                countdowntxt.text = ((int)countdown).ToString();
+                if (countdown >= 1) {
+                    countdowntxt.text = ((int)countdown).ToString();
+                }
+                else {
+                    countdowntxt.text = "GO!";
+                }
             }
             else {
                 countdowntxt.enabled = false;
+                player1score.enabled=true;
+                player2score.enabled=true;
+                gameTimetxt.enabled=true;
                 game = true;
                 g.SetActive(true);
             }
