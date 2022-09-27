@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
 
-
-[RequireComponent(typeof(Rigidbody2D))]
 public class Joueur : MonoBehaviour
 {
     public float moveSpeed;
@@ -19,19 +17,21 @@ public class Joueur : MonoBehaviour
     {
         return this.direction;
     }
-    
-    private Rigidbody2D rigidbody2D;
-
-    public Rigidbody2D getRigibody2D()
+    public Vector2 getPosition()
     {
-        return rigidbody2D;
+        return this.position;
     }
+
+    private Rigidbody2D rigidbody2D;
+    
     
     private void Start()
     {
         rigidbody2D = this.GetComponent<Rigidbody2D>();
     }
-    
-    
-    
+
+    private void Update()
+    {
+        position = this.transform.position;
+    }
 }
