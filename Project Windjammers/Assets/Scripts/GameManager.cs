@@ -34,8 +34,7 @@ public class GameManager : MonoBehaviour
 
         private void Update()
         {
-
-
+                
                 if (Input.GetKeyDown(KeyCode.A))
                 {
                         SceneManager.LoadScene(0);
@@ -108,9 +107,7 @@ public class GameManager : MonoBehaviour
                 { 
                         
                 }
-          
-                
-               
+
               
         }
 
@@ -196,10 +193,6 @@ public class GameManager : MonoBehaviour
                 
                 if (InputPress) return;
                 
-             /*   joueur.setDirection( new Vector2( 
-                        h * ( (x <= -20 && h<0) || (x >= -1.5 && h>0) ? 0:1) ,
-                        v* ( (y >= 8.66f && v>0) || (y <= -8.20f && v<0)  ? 0:1))
-           );    */
 
                 joueur.setDirection(new Vector2(
                      h,
@@ -211,22 +204,19 @@ public class GameManager : MonoBehaviour
                         joueur.transform.position += (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f;        
                 }
                 
-                
-
              
                 
         }
         
         IEnumerator RandomMove(Joueur joueur, bool f)
         {
-                float counter = Random.Range(0.1f,0.6f);
+                float counter = Random.Range(0.05f,0.3f);
                 joueur.setDirection(new Vector2(Random.Range(-1f,1f), Random.Range(-1f,1f)));
 
                 while (counter >0)
                 {
                         counter -= 0.02f;
                         
-                    
                         
                         if (!collisionWall(joueur.transform.position + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ))
                         { 
@@ -241,7 +231,7 @@ public class GameManager : MonoBehaviour
 
         private void RandomMove(Joueur joueur)
         {
-                float counter = Random.Range(0.1f,0.4f);
+                float counter = Random.Range(0.05f,0.3f);
                 joueur.setDirection(new Vector2(Random.Range(-1f,1f), Random.Range(-1f,1f)));
 
                 while (counter >0)

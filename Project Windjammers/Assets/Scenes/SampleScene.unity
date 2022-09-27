@@ -2215,7 +2215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f52701366feae0d43a387c59ed8c704b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 17
+  Speed: 25
   frisbeeTransform: {fileID: 1276752552}
 --- !u!58 &1276752549
 CircleCollider2D:
