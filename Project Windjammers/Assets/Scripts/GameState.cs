@@ -26,24 +26,31 @@ public class GameState : MonoBehaviour
 
     private void FixedUpdate()
     {
-        isCatch(j1, frisbee);
+        
+        if (isCatch(j1, frisbee))
+        {
+            frisbee.setDirection(new Vector2(0, 0));
+        }
+        if (isCatch(j2, frisbee))
+        {
+            frisbee.setDirection(new Vector2(0, 0));
+        }
         collisionWall(frisbee);
     }
 
-    private void isCatch(Joueur j, Frisbee f)
+    private bool isCatch(Joueur j, Frisbee f)
     {
         float distance = Mathf.Sqrt(Mathf.Pow((j.getPosition().x - f.getPosition().x),2)+Mathf.Pow((j.getPosition().y - f.getPosition().y),2));
         if(distance < 2)
         {
-            Vector2 vecnull = new Vector2(0, 0);
-            f.setDirection(vecnull);
+            return true;
         }
-
+        return false;
     }
 
     private void collisionWall(Frisbee f)
     {
-        if (f.getPosition().y > 9.5 || f.getPosition().y <-9.5)
+        if (f.getPosition().y > 8.9 || f.getPosition().y <-8.1)
         {
             Vector2 newdir = new Vector2(f.GetDirection().x, -f.GetDirection().y);
             f.setDirection(newdir);

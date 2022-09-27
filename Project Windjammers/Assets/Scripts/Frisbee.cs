@@ -6,7 +6,9 @@ public class Frisbee: MonoBehaviour
     private Vector2 position;
     private Vector2 direction;
     private Joueur joueur;
-    
+
+    public Rigidbody2D frisbeeBody;
+    public CircleCollider2D frisbeeCollider;
     public Transform frisbeeTransform;
 
     private void Start()
@@ -22,30 +24,14 @@ public class Frisbee: MonoBehaviour
 
     private void FixedUpdate()
     {
-        frisbeeTransform.position += (Vector3)direction.normalized*Time.fixedDeltaTime*30;
+        frisbeeBody.transform.position += (Vector3)direction.normalized*Time.fixedDeltaTime*30;
         
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("TopWall"))
-        {
-            
-            direction = new Vector2(direction.x, -direction.y);
-        }
-
-        if (collision.CompareTag("BottomWall"))
-        {
-            
-            direction = new Vector2(direction.x, -direction.y);
-        }
-
         
     }
 
     public Vector2 getPosition()
     {
-        return this.position;
+        return this.transform.position;
     }
 
     public Vector2 GetDirection()
@@ -55,7 +41,7 @@ public class Frisbee: MonoBehaviour
     
     public void setPosition(Vector2 pos)
     {
-        this.position = pos;
+        this.transform.position = pos;
     }
     public void setDirection(Vector2 dir)
     {
