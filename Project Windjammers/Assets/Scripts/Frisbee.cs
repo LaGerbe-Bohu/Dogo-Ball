@@ -1,32 +1,74 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Frisbee: MonoBehaviour
 {
-
+    public float Speed = 7f;
+    
     private Vector2 position;
     private Vector2 direction;
     private Joueur joueur;
-
+    
+    
 
     public Transform frisbeeTransform;
+    private GameState gameState;
+
+
+    public Joueur getJoueur()
+    {
+        return this.joueur;
+    }
+    
+    public void setJoueur(Joueur j)
+    {
+        this.joueur = j;
+    }
+    
+    
+    
+    
+    private bool isCatched;
+
+    public bool getIsCatched()
+    {
+        return isCatched;
+    }
+
+    public void setCatched(bool s)
+    {
+        this.isCatched = s;
+    }
 
     private void Start()
     {
+        gameState = GameState.Instance;
+        
+        
+        
         float random = Random.Range(0, 10);
+        
+     
+        
         if (random > 5)
         {
-            direction = new Vector2(9.5f, 5);
+            direction = (gameState.j1.transform.position - this.transform.position).normalized;
         }
-        else direction = new Vector2(-9.5f, 5);
-
+        else direction = (gameState.j2.transform.position - this.transform.position).normalized;
+        
+        direction = (gameState.j1.transform.position - this.transform.position).normalized;
     }
+    
 
-    private void FixedUpdate()
+    private void Update()
     {
-        frisbeeTransform.transform.position += (Vector3)direction.normalized*0.02f*30;
-        
-        
+
+      
     }
+
+  
 
     public Vector2 getPosition()
     {
