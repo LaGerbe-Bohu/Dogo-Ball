@@ -7,8 +7,7 @@ public class Frisbee: MonoBehaviour
     private Vector2 direction;
     private Joueur joueur;
 
-    public Rigidbody2D frisbeeBody;
-    public CircleCollider2D frisbeeCollider;
+
     public Transform frisbeeTransform;
 
     private void Start()
@@ -24,7 +23,7 @@ public class Frisbee: MonoBehaviour
 
     private void FixedUpdate()
     {
-        frisbeeBody.transform.position += (Vector3)direction.normalized*0.02f*30;
+        frisbeeTransform.transform.position += (Vector3)direction.normalized*0.02f*30;
         
         
     }
