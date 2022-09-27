@@ -10,8 +10,8 @@ public class InputManager
         if (Input.GetAxisRaw("Vertical") > 0)
         {
             return true;
-        }
-
+        } 
+        
         return false;
     }
 
