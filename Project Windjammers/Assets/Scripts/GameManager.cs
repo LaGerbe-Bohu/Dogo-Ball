@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
         private Coroutine co;
         private bool InputPress = false;
         private bool movePlayer = false;
+        private bool moveRandom = false;
         private bool freezeInput = false;
 
         private bool gameStarted = false;
@@ -96,9 +97,9 @@ public class GameManager : MonoBehaviour
                         {
                                 
                                 gameState.frisbee.setCatched(false);
-                                StopAllCoroutines();
-                                co = StartCoroutine(RandomMove(gameState.j2, true));
-                                
+                              
+                         
+                                moveRandom = true;
                                 throwFrisbee(gameState.frisbee,new Vector2(-1,Random.Range(-1,2)));
                         }
                       
@@ -142,7 +143,9 @@ public class GameManager : MonoBehaviour
                 if (gameState.frisbee.getIsCatched() && gameStarted)
                 {
                         freezeInput = false;
-                        co = StartCoroutine(RandomMove(gameState.j2, true));
+               
+                        
+                        moveRandom = true;
                         gameStarted = false;
                 } 
              
@@ -203,6 +206,13 @@ public class GameManager : MonoBehaviour
                 if (movePlayer)
                 {
                         MovePlayer(gameState.j1);
+                }
+
+                if ( moveRandom )
+                {
+                        StopAllCoroutines();
+                        co = StartCoroutine(RandomMove(gameState.j2, true));
+                        moveRandom = false;
                 }
                 
                 MoveFrisbee(gameState.frisbee);
@@ -341,7 +351,9 @@ public class GameManager : MonoBehaviour
         {
                 float counter = Random.Range(0.05f,0.3f);
                 joueur.setDirection(new Vector2(Random.Range(-1f,1f), Random.Range(-1f,1f)));
-
+                
+                
+                
                 while (counter >0)
                 {
                         counter -= 0.02f;
@@ -353,7 +365,7 @@ public class GameManager : MonoBehaviour
                         }
                      
                         
-                        yield return new WaitForEndOfFrame();
+                        yield return new WaitForFixedUpdate();
                 }
                 StartCoroutine( RandomMove(gameState.j2,true)); 
         }
