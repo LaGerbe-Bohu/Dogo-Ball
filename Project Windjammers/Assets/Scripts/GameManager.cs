@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
         private Joueur oldThrower;
         private Vector2 initialposf;
         private bool endResetGame = true;
+        private float catchedTimer;
         
         // Utiliser GameState.[qqch] pour récuperer le joueur par exemple pour le frisbee
         // Ca serait bien qu'il y ai que cette classe qui ai le droit de modifier ces objets
@@ -39,6 +40,7 @@ public class GameManager : MonoBehaviour
                 freezeInput = true;
                 gameStarted = true;
                 initialposf = gameState.frisbee.transform.position;
+                catchedTimer = 3;
                 
                 
         }
@@ -80,14 +82,16 @@ public class GameManager : MonoBehaviour
         {
                 if (gameState.frisbee.getIsCatched() )
                 {
+                        
                         if (gameState.frisbee.getJoueur() == gameState.j1 )
                         {
-                                
-                                if ( (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.RightArrow)) || (Input.GetKey(KeyCode.Space)) )
+                                catchedTimer -= 0.02f;
+                                if ( (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.RightArrow)) || (Input.GetKey(KeyCode.Space)) || catchedTimer<=0)
                                 {
                                         freezeInput = false;
                                         gameState.frisbee.setCatched(false);
                                         throwFrisbee(gameState.frisbee,new Vector2(1,0));
+                                        catchedTimer = 3;
                                 }
                         
                                 if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.DownArrow) )
@@ -95,6 +99,7 @@ public class GameManager : MonoBehaviour
                                         freezeInput = false;
                                         gameState.frisbee.setCatched(false);
                                         throwFrisbee(gameState.frisbee, new Vector2(1, -1));
+                                        catchedTimer = 3;
                                 }
                         
                                 if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.UpArrow) )
@@ -102,7 +107,9 @@ public class GameManager : MonoBehaviour
                                         freezeInput = false;
                                         gameState.frisbee.setCatched(false);
                                         throwFrisbee(gameState.frisbee,new Vector2(1,1));
-                                }   
+                                        catchedTimer = 3;
+                                }
+                                
                         }
                         else
                         {
