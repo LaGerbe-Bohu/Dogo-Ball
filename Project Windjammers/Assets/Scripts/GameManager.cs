@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
         private bool endResetGame = true;
         
         // Utiliser GameState.[qqch] pour récuperer le joueur par exemple pour le frisbee
-        // Ca serait bien qu'il est que cette classe qui est le droit de modifier ces objets
+        // Ca serait bien qu'il y ai que cette classe qui ai le droit de modifier ces objets
         
         // Intégrer ici je pense : Les déplacement de joueur, le lancé de frisbee ainsi que les 
         // le rebou de celui-ci sur le mur. Le catch.
@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour
                 freezeInput = true;
                 gameStarted = true;
                 initialposf = gameState.frisbee.transform.position;
+                
                 
         }
 
@@ -197,6 +198,8 @@ public class GameManager : MonoBehaviour
                 {
                         gameState.frisbee.setDirection( (gameState.j2.transform.position - gameState.frisbee.transform.position).normalized);
                 }
+
+
                 
         }
 
@@ -388,6 +391,7 @@ public class GameManager : MonoBehaviour
                 
 
         }
+        
 
         
         
