@@ -56,9 +56,10 @@ public class GameManager : MonoBehaviour
  
                 bool b = Goal(gameState);
                 
+                
                 if (!b && endResetGame)
                 {
-                        ManageCatch(gameState);
+                       ManageCatch(gameState);
                 }
 
             
@@ -251,9 +252,11 @@ public class GameManager : MonoBehaviour
         
         public void resetGame()
         {
+                
                 freezeInput = true;
                 oldThrower = null;
                 gameStarted = false;
+                moveRandom = false;
                 
                 StopAllCoroutines();
                 StartCoroutine(replace());
@@ -337,7 +340,6 @@ public class GameManager : MonoBehaviour
                         frisbee.setPosition(initialposf);
                         frisbee.setDirection(new Vector2(0,0));
                         gameState.gameManager.resetGame();
-
                         goal = true;
           
                 }
@@ -350,8 +352,9 @@ public class GameManager : MonoBehaviour
                         }
                         frisbee.setPosition(initialposf);
                         frisbee.setDirection(new Vector2(0,0));
-                        goal = true;
                         gameState.gameManager.resetGame();
+                        goal = true;
+                        
                 }
 
                 return goal;
