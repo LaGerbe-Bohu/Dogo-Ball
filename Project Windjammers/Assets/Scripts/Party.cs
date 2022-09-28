@@ -15,6 +15,8 @@ public class Party : MonoBehaviour
     private float countdown;
     private float gameTime;
     private bool game;
+    private bool endgame;
+    private string victoryphrase;
     private GameObject g;
 
     private GameState gameState;
@@ -32,11 +34,25 @@ public class Party : MonoBehaviour
         player1score.enabled=false;
         player2score.enabled=false;
         gameTimetxt.enabled=false;
+        endgame = false;
+
+        if (gameState.j1.getScore().setCount == 3)
+        {
+            victoryphrase = "Vous avez gagné avec un score de : " + gameState.j1.getScore().setCount + " à " + gameState.j2.getScore().setCount;
+            endgame = true;
+        }
+        if (gameState.j2.getScore().setCount == 3)
+        {
+            victoryphrase = "Vous avez perdu avec un score de : " + gameState.j2.getScore().setCount + " à " + gameState.j1.getScore().setCount;
+            endgame = true;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+
         if (game) {
              if (gameTime > 0)
              {
@@ -50,23 +66,36 @@ public class Party : MonoBehaviour
             player2score.text = j2.setCount.ToString()+" / "+j2.points.ToString();
         }
         else {
-            if (countdown > 0) {
-                countdown -= Time.deltaTime*2f;
-                if (countdown >= 1) {
-                    countdowntxt.text = ((int)countdown).ToString();
+            if (!endgame)
+            {
+                if (countdown > 0)
+                {
+                    countdown -= Time.deltaTime;
+                    if (countdown >= 1)
+                    {
+                        countdowntxt.text = ((int)countdown).ToString();
+                    }
+                    else
+                    {
+                        countdowntxt.text = "GO!";
+                    }
                 }
-                else {
-                    countdowntxt.text = "GO!";
+                else
+                {
+                    countdowntxt.enabled = false;
+                    player1score.enabled = true;
+                    player2score.enabled = true;
+                    gameTimetxt.enabled = true;
+                    game = true;
+                    g.SetActive(true);
                 }
             }
-            else {
-                countdowntxt.enabled = false;
-                player1score.enabled=true;
-                player2score.enabled=true;
-                gameTimetxt.enabled=true;
-                game = true;
-                g.SetActive(true);
+            else
+            {
+                countdowntxt.text = victoryphrase;
+                countdowntxt.fontSize = 15;
             }
+            
         }
     }
 }
