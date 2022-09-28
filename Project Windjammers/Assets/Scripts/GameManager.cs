@@ -50,9 +50,15 @@ public class GameManager : MonoBehaviour
                 {
                         SceneManager.LoadScene(0);
                 }
+ 
+                bool b = Goal(gameState);
+                
+                if (!b && endResetGame)
+                {
+                        ManageCatch(gameState);
+                }
 
-
-                Goal(gameState);
+            
 
                 if (gameState.j1.score.points >= 15)
                 {
@@ -64,9 +70,13 @@ public class GameManager : MonoBehaviour
                         GameState.J2set++;
                         SceneManager.LoadScene(0);  
                 }
-                
-                
 
+
+        }
+
+
+        public void ManageCatch(GameState gameState)
+        {
                 if (gameState.frisbee.getIsCatched() )
                 {
                         if (gameState.frisbee.getJoueur() == gameState.j1 )
@@ -148,12 +158,88 @@ public class GameManager : MonoBehaviour
                         moveRandom = true;
                         gameStarted = false;
                 } 
-             
-             
+                
+                if (gameState.frisbee.getIsCatched() )
+                {
+                        if (gameState.frisbee.getJoueur() == gameState.j1 )
+                        {
+                                
+                                if ( (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.RightArrow)) || (Input.GetKey(KeyCode.Space)) )
+                                {
+                                        freezeInput = false;
+                                        gameState.frisbee.setCatched(false);
+                                        throwFrisbee(gameState.frisbee,new Vector2(1,0));
+                                }
+                        
+                                if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.DownArrow) )
+                                {       
+                                        freezeInput = false;
+                                        gameState.frisbee.setCatched(false);
+                                        throwFrisbee(gameState.frisbee, new Vector2(1, -1));
+                                }
+                        
+                                if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.UpArrow) )
+                                {
+                                        freezeInput = false;
+                                        gameState.frisbee.setCatched(false);
+                                        throwFrisbee(gameState.frisbee,new Vector2(1,1));
+                                }   
+                        }
+                        else
+                        {
+                                
+                                gameState.frisbee.setCatched(false);
+                                moveRandom = true;
+                                throwFrisbee(gameState.frisbee,new Vector2(-1,Random.Range(-1,2)));
+                        }
+                      
+                     
+                      
+                }
+                
+                
+                
+                if (isCatch(gameState.j1, gameState.frisbee) && oldThrower != gameState.j1 && endResetGame  )
+                {
+                        gameState.frisbee.setCatched(true);
+                        gameState.frisbee.setDirection(new Vector2(0, 0));
+                        gameState.frisbee.setJoueur(gameState.j1);
+                        gameState.frisbee.setPosition(gameState.j1.getPosition());
+                        oldThrower = gameState.j1;
+                        movePlayer = false;
 
-                Debug.Log(gameState.frisbee.getIsCatched()+"&&"+ gameStarted);
+                }
+                else if (isCatch(gameState.j2, gameState.frisbee)  && oldThrower != gameState.j2 && endResetGame  )
+                {
+                        //  ManageCatch();
+                        StopAllCoroutines();
+                        gameState.frisbee.setCatched(true);
+                        gameState.frisbee.setDirection(new Vector2(0, 0));
+                        gameState.frisbee.setJoueur(gameState.j2);
+                        gameState.frisbee.setPosition(gameState.j2.getPosition());
+                        oldThrower = gameState.j2;
+                        
+                }
+                
+                
+                if (!gameState.frisbee.getIsCatched())
+                {
+                        gameState.frisbee.setCatched(false);
+                        movePlayer = true;
+
+                      
+                }
+
+                if (gameState.frisbee.getIsCatched() && gameStarted)
+                {
+                        freezeInput = false;
+               
+                        
+                        moveRandom = true;
+                        gameStarted = false;
+                } 
+             
         }
-
         
         public void resetGame()
         {
@@ -166,25 +252,25 @@ public class GameManager : MonoBehaviour
 
                 gameStarted = true;
 
-
+                endResetGame = false;
         }
         
         IEnumerator replace()
         {
-                endResetGame = false;
+          
                 while (
                         gameState.j1.getPosition() != new Vector2(-15, 0) ||
                        gameState.j2.getPosition() != new Vector2(15, 0)
                        )
                 {
                         gameState.j1.transform.position = Vector2.MoveTowards(gameState.j1.transform.position,
-                                new Vector2(-15, 0), 0.02f * 10f);
+                                new Vector2(-15, 0), 0.02f * 15f);
                         
                         gameState.j2.transform.position = Vector2.MoveTowards(gameState.j2.transform.position,
-                                new Vector2(15, 0), 0.02f * 10f);
+                                new Vector2(15, 0), 0.02f * 15f);
                         
                         
-                        yield return null;
+                        yield return new WaitForFixedUpdate();
                 }
                 
                 float random = Random.Range(0, 1f);
@@ -227,6 +313,7 @@ public class GameManager : MonoBehaviour
                 Score scoreJ1 = gameState.j1.getScore();
                 Score scoreJ2 = gameState.j2.getScore();
 
+          
                 bool goal = false;
                 
                 if (frisbee.getPosition().x >= 19 && frisbee.getPosition().x <= 21) {
@@ -240,6 +327,7 @@ public class GameManager : MonoBehaviour
                         frisbee.setPosition(initialposf);
                         frisbee.setDirection(new Vector2(0,0));
                         gameState.gameManager.resetGame();
+
                         goal = true;
           
                 }

@@ -38,9 +38,10 @@ public class Party : MonoBehaviour
     void Update()
     {
         if (game) {
-             if (gameTime > 0) {
-            gameTime -= Time.deltaTime*4f;
-            }
+             if (gameTime > 0)
+             {
+                 gameTime -= Time.deltaTime;
+             }
             else {
                 gameTime = 0;
             }
@@ -50,7 +51,7 @@ public class Party : MonoBehaviour
         }
         else {
             if (countdown > 0) {
-                countdown -= Time.deltaTime;
+                countdown -= Time.deltaTime*2f;
                 if (countdown >= 1) {
                     countdowntxt.text = ((int)countdown).ToString();
                 }
