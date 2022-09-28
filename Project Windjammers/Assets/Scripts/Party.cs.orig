@@ -35,15 +35,15 @@ public class Party : MonoBehaviour
         player2score.enabled=false;
         gameTimetxt.enabled=false;
         endgame = false;
-    
-        if (gameState.j1.getScore().setCount >= 3)
+
+        if (gameState.j1.getScore().setCount == 3)
         {
-            victoryphrase = "Vous avez gagnÃ© avec un score de : " + gameState.j1.getScore().setCount + " Ã  " + gameState.j2.getScore().setCount;
+            victoryphrase = "Vous avez gagné avec un score de : " + gameState.j1.getScore().setCount + " à " + gameState.j2.getScore().setCount;
             endgame = true;
         }
-        if (gameState.j2.getScore().setCount >= 3)
+        if (gameState.j2.getScore().setCount == 3)
         {
-            victoryphrase = "Vous avez perdu avec un score de : " + gameState.j2.getScore().setCount + " Ã  " + gameState.j1.getScore().setCount;
+            victoryphrase = "Vous avez perdu avec un score de : " + gameState.j2.getScore().setCount + " à " + gameState.j1.getScore().setCount;
             endgame = true;
         }
     }
@@ -66,6 +66,12 @@ public class Party : MonoBehaviour
             player2score.text = j2.setCount.ToString()+" / "+j2.points.ToString();
         }
         else {
+<<<<<<< HEAD
+            if (countdown > 0) {
+                countdown -= Time.deltaTime*2f;
+                if (countdown >= 1) {
+                    countdowntxt.text = ((int)countdown).ToString();
+=======
             if (!endgame)
             {
                 if (countdown > 0)
@@ -79,6 +85,7 @@ public class Party : MonoBehaviour
                     {
                         countdowntxt.text = "GO!";
                     }
+>>>>>>> ccc5ccbd7485aa20abfe5a9097a7a91f0e67389c
                 }
                 else
                 {
