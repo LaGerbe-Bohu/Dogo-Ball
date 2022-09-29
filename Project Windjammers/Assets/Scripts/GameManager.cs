@@ -359,7 +359,9 @@ public class GameManager : MonoBehaviour
                         return (true, new Joueur(Vector2.zero,Vector2.zero, 0,"personne",new Score(0,0)));
                 }
                 
-                if (frisbee.getPosition().x >= 19 && frisbee.getPosition().x <= 21) {
+                
+                
+                if (frisbee.getPosition().x >= 19 ) {
                         if (frisbee.getPosition().y >= -6 && frisbee.getPosition().y <= 6) {
                                 scoreJ1.points+=3;
                                
@@ -376,7 +378,7 @@ public class GameManager : MonoBehaviour
                         j = gameState.j1;
 
                 }
-                if (frisbee.getPosition().x <= -19 && frisbee.getPosition().x >= -21) {
+                if (frisbee.getPosition().x <= -19 ) {
                         if (frisbee.getPosition().y >= -6 && frisbee.getPosition().y <= 6) {
                                 scoreJ2.points+=3;
                         }
@@ -543,7 +545,7 @@ public class GameManager : MonoBehaviour
         
         public void SetAction(Joueur joueur,Action a)
         {
-                Debug.Log(joueur.PlayerTag);
+          
                 joueur.counter = a.time;
                 joueur.setDirection(a.direction);
                 

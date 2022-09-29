@@ -23,14 +23,9 @@ public class MCTSnode
 
 public class MCTSManager
 {
-    private const int NUMBER_TEST = 100;
-    private const int NUMBER_SIMULATION = 20;
+    private const int NUMBER_TEST = 200;
+    private const int NUMBER_SIMULATION = 80;
     
-    
-    public MCTSManager()
-    {
-        
-    }
     
     private GameManager GameManager;
     private List<MCTSnode> lstnodes;
@@ -219,7 +214,7 @@ public class MCTSManager
                  
                 (finish,j) = InterfaceGameState.instance.getGameManager().Goal(gameState);
                 
-                if (c >= 25000)
+                if (c >= 15000)
                 {
                     Debug.LogError("Simulation à pris plus de  tics");
                     break;
