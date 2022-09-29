@@ -23,7 +23,7 @@ public class Party : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameState = GameState.Instance;
+        gameState = InterfaceGameState.instance.gameState;
         j1 = gameState.j1.getScore();
         j2 = gameState.j2.getScore();
         gameTime = roundTime;

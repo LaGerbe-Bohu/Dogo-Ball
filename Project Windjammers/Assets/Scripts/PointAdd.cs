@@ -14,11 +14,11 @@ public class PointAdd : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameState = GameState.Instance;
+        gameState =InterfaceGameState.instance.gameState;
         scoreJ1 = gameState.j1.getScore();
         scoreJ2 = gameState.j2.getScore();
         frisbee = gameState.frisbee;
-        initialposf = frisbee.transform.position;
+        initialposf = frisbee.getPosition();
     }
 
     // Update is called once per frame

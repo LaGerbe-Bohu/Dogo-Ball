@@ -2,15 +2,32 @@ using System;
 using UnityEngine;
 
 
-public class Joueur : MonoBehaviour
+[System.Serializable]
+public class Joueur 
 {
     private Vector2 position;
     private Vector2 direction;
     public Score score;
-
     public float moveSpeed;
+    public float counter;
 
+    public Joueur(Vector2 position, Vector2 direction,float moveSpeed,Score score)
+    {
+        this.position = position;
+        this.direction = direction;
+        this.score = score;
+        this.moveSpeed = moveSpeed;
+    }
 
+    public Joueur(Joueur joueur)
+    {
+        this.position = joueur.position;
+        this.direction = joueur.direction;
+        this.score = joueur.score;
+        this.moveSpeed = joueur.moveSpeed;
+    }
+    
+    
     public Score getScore()
     {
         return this.score;
@@ -23,7 +40,12 @@ public class Joueur : MonoBehaviour
     
     public Vector2 getPosition()
     {
-        return this.transform.position;
+        return this.position;
+    }
+    
+    public void setPosition( Vector2 vec)
+    {
+        this.position = vec;
     }
     
     public Vector2 getDirection()
@@ -31,17 +53,10 @@ public class Joueur : MonoBehaviour
         return this.direction;
     }
     
-    private Rigidbody2D rigidbody2D;
-
-    public Rigidbody2D getRigibody2D()
-    {
-        return rigidbody2D;
-    }
     
     private void Start()
     {
-        rigidbody2D = this.GetComponent<Rigidbody2D>();
-       
+
     }
     
     
