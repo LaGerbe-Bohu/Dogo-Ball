@@ -193,8 +193,8 @@ public class GameManager : MonoBehaviour
                         SceneManager.LoadScene(0);  
                 }
                 
-             
                 
+
         }
         
 
@@ -356,6 +356,10 @@ public class GameManager : MonoBehaviour
 
                 if (gameState.timer <= 0)
                 {
+                        frisbee.setPosition(gameState.initialposf);
+                        frisbee.setDirection(new Vector2(0,0));
+                        InterfaceGameState.instance.getGameManager().resetGame(gameState);
+                        this.gameState.timer = 30;
                         return (true, new Joueur(Vector2.zero,Vector2.zero, 0,"personne",new Score(0,0)));
                 }
                 

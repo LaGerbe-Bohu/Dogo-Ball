@@ -23,8 +23,8 @@ public class MCTSnode
 
 public class MCTSManager
 {
-    private const int NUMBER_TEST = 200;
-    private const int NUMBER_SIMULATION = 80;
+    private const int NUMBER_TEST = 300;
+    private const int NUMBER_SIMULATION = 20;
     
     
     private GameManager GameManager;
@@ -154,7 +154,7 @@ public class MCTSManager
         float ex=   Random.Range(0f,1f);
         MCTSnode result = null;
         Assert.AreNotEqual(lstnodes.Count,0);
-        if (ex >= .8 || lstnodes.Count <= 1)
+        if (ex >= .5 || lstnodes.Count <= 1)
         { 
             result = lstnodes[Random.Range(0, lstnodes.Count)];
         }
