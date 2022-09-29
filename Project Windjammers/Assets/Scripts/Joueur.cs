@@ -7,24 +7,31 @@ public class Joueur
 {
     private Vector2 position;
     private Vector2 direction;
+    [HideInInspector]
     public Score score;
     public float moveSpeed;
+    [HideInInspector]
     public float counter;
-
-    public Joueur(Vector2 position, Vector2 direction,float moveSpeed,Score score)
+    public string PlayerTag;
+    
+    public Joueur(Vector2 position, Vector2 direction,float moveSpeed,string PlayerTag,Score score)
     {
         this.position = position;
         this.direction = direction;
-        this.score = score;
+        this.score = new Score(score);
         this.moveSpeed = moveSpeed;
+        this.PlayerTag = PlayerTag;
+        this.counter = 0;
     }
 
     public Joueur(Joueur joueur)
     {
         this.position = joueur.position;
         this.direction = joueur.direction;
-        this.score = joueur.score;
+        this.score = new Score(joueur.score);
         this.moveSpeed = joueur.moveSpeed;
+        this.PlayerTag = joueur.PlayerTag;
+        this.counter = 0;
     }
     
     

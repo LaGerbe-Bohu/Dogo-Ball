@@ -6,7 +6,7 @@ public class GameState
 {
     
     
-    private int timer;
+    public float timer;
     private int setCurrent;
     
     public Joueur j1;
@@ -27,7 +27,6 @@ public class GameState
     public Vector2 initialposf;
     public bool endResetGame = true;
     public float catchedTimer;
-
     
     
     public GameState(Joueur j1, Joueur j2,Frisbee frisbee, int timer,int setCurrent)

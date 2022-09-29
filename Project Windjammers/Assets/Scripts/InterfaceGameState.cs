@@ -30,8 +30,8 @@ public class InterfaceGameState : MonoBehaviour
     {
         instance = this;
 
-        j1 = new Joueur(gameManager.j1.position, Vector2.zero, j1.moveSpeed, new Score(0,0));
-        j2 = new Joueur(gameManager.j2.position, Vector2.zero, j2.moveSpeed,new Score(0,0));
+        j1 = new Joueur(gameManager.j1.position, Vector2.zero, j1.moveSpeed, j1.PlayerTag,new Score(0,0));
+        j2 = new Joueur(gameManager.j2.position, Vector2.zero, j2.moveSpeed,j2.PlayerTag,new Score(0,0));
         frisbee = new Frisbee((Vector2) gameManager.frisbee.transform.position, Vector2.zero,frisbee.Speed, j1);
             
         gameState = CreateInstance();

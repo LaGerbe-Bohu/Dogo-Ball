@@ -3,7 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
+
+
+public struct Action
+{
+        public float time;
+        public Vector2 direction;
+}
+
 
 
 public class GameManager : MonoBehaviour
@@ -18,6 +27,13 @@ public class GameManager : MonoBehaviour
         private MCTSManager mcts;
         
         private bool movePlayer = false;
+
+        [HideInInspector]
+        public List<Action> actions;
+
+        private float count = 0;
+        
+        public Action MCTSaction;
         
         // Utiliser GameState.[qqch] pour récuperer le joueur par exemple pour le frisbee
         // Ca serait bien qu'il y ai que cette classe qui ai le droit de modifier ces objets
@@ -28,9 +44,31 @@ public class GameManager : MonoBehaviour
 
         private void Start()
         {
+
                 gameState = InterfaceGameState.instance.gameState;
                 gameState.initialposf = frisbee.transform.position;
                 mcts = new MCTSManager();
+                actions = new List<Action>();
+
+                gameState.timer = 30;
+                
+                for (int x = -1; x < 2 ; x++)
+                {
+                        for (int y = -1; y < 2; y++)
+                        {
+                                for (float t = 0.05f; t < .3f; t+=0.025f)
+                                {
+                                        actions.Add(new Action(){direction = new Vector2(x,y), time = t });  
+                                }
+
+                              
+                        }
+                        
+
+                      
+                }
+                
+                
 
 
                 initializeGame(gameState,false);
@@ -47,10 +85,14 @@ public class GameManager : MonoBehaviour
                 gameState.gameStarted = true;
                 gameState.catchedTimer = 3;
                 gameState.movePlayer = false;
-                
-                float random = Random.Range(0, 1f);
-                if (random > .5f) { gameState.frisbee.setDirection((gameState.j1.getPosition() -gameState.frisbee.getPosition()).normalized);}
-                else { gameState.frisbee.setDirection((gameState.j2.getPosition() -gameState.frisbee.getPosition()).normalized); } 
+
+                if (gameState.frisbee.GetDirection() == new Vector2())      
+                {
+                        float random = Random.Range(0, 1f);
+                        if (random > .5f) { gameState.frisbee.setDirection((gameState.j1.getPosition() -gameState.frisbee.getPosition()).normalized);}
+                        else { gameState.frisbee.setDirection((gameState.j2.getPosition() -gameState.frisbee.getPosition()).normalized); } 
+                }
+             
         }
         
 
@@ -66,7 +108,10 @@ public class GameManager : MonoBehaviour
                 
                 if (Input.GetKeyDown(KeyCode.B))
                 {
-                        mcts.SimulateGame(InterfaceGameState.instance.CreateInstance(gameState));
+                        
+                       // mcts.SimulateGame(InterfaceGameState.instance.CreateInstance(gameState),new Action(){ direction = Vector2.one, time = 0});
+                        
+                      
                 }
 
 
@@ -84,13 +129,17 @@ public class GameManager : MonoBehaviour
 
         public void RunSimulatedMovement(GameState gameState)
         {
+                if (!gameState.simulation) return;
+                
                 if (gameState.movePlayer)
                 {
+                        SetRandomAction(gameState.j1,actions);
                         RandomMove(gameState.j1);
                 }
                 
                 if ( gameState.moveRandom )
                 {
+                        SetRandomAction(gameState.j2,actions);
                         RandomMove(gameState.j2);
                         
                 }
@@ -108,7 +157,12 @@ public class GameManager : MonoBehaviour
                 
                 if ( gameState.moveRandom )
                 {
-                        RandomMove(gameState.j2);
+                       
+                   
+                        SetMCTSACTION(gameState.j2,MCTSaction);
+                        MoveMCTS(gameState.j2);
+                      
+                        // RandomMove(gameState.j2);
                 }
                 
                 MoveFrisbee(gameState.frisbee);
@@ -117,20 +171,23 @@ public class GameManager : MonoBehaviour
 
         public void RunFrame(GameState gameState)
         {
-                bool b = Goal(gameState);
+                bool b = Goal(gameState).Item1;
                 
                 if (!b && gameState.endResetGame)
                 {
                         ManageCatch(gameState);
                 }
-              
+
+                gameState.timer -= 0.02f;
                 
-                if (gameState.j1.score.points >= 15)
+                
+                
+                if (gameState.j1.score.points >= 15 && !gameState.simulation)
                 {
                         InterfaceGameState.J1set++;
                         SceneManager.LoadScene(0);
                 }
-                else if (gameState.j2.score.points >= 15)
+                else if (gameState.j2.score.points >= 15 &&  !gameState.simulation)
                 {
                         InterfaceGameState.J2set++;
                         SceneManager.LoadScene(0);  
@@ -143,7 +200,8 @@ public class GameManager : MonoBehaviour
 
         public void ManageCatch(GameState gameState)
         {
-            
+           
+                
                 if (gameState.frisbee.getIsCatched() )
                 {
                         
@@ -157,6 +215,8 @@ public class GameManager : MonoBehaviour
                                         throwFrisbee(gameState.frisbee,new Vector2(1,0));
                                         gameState.catchedTimer = 3;
                                         gameState.movePlayer = true;
+                                     
+                                        
                                 }
                         
                                 if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.DownArrow) )
@@ -166,6 +226,7 @@ public class GameManager : MonoBehaviour
                                         throwFrisbee(gameState.frisbee, new Vector2(1, -1));
                                         gameState.catchedTimer = 3;
                                         gameState.movePlayer = true;
+                                        MCTSaction = mcts.ComputeMCTS(this.gameState.j2, InterfaceGameState.instance.CreateInstance(gameState));
                                 }
                         
                                 if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.UpArrow) )
@@ -175,6 +236,7 @@ public class GameManager : MonoBehaviour
                                         throwFrisbee(gameState.frisbee,new Vector2(1,1));
                                         gameState.catchedTimer = 3;
                                         gameState.movePlayer = true;
+                                        MCTSaction = mcts.ComputeMCTS(this.gameState.j2, InterfaceGameState.instance.CreateInstance(gameState));
                                 }
                                 
                         }
@@ -279,18 +341,23 @@ public class GameManager : MonoBehaviour
                 
                 
         }
+        
 
-
-
-
-        public bool Goal(GameState gameState)
+        public (bool,Joueur) Goal(GameState gameState)
         {
                 Frisbee frisbee = gameState.frisbee;
                 Score scoreJ1 = gameState.j1.getScore();
                 Score scoreJ2 = gameState.j2.getScore();
-                
-                
+
+                Joueur j = null;
                 bool goal = false;
+
+
+
+                if (gameState.timer <= 0)
+                {
+                        return (true, new Joueur(Vector2.zero,Vector2.zero, 0,"personne",new Score(0,0)));
+                }
                 
                 if (frisbee.getPosition().x >= 19 && frisbee.getPosition().x <= 21) {
                         if (frisbee.getPosition().y >= -6 && frisbee.getPosition().y <= 6) {
@@ -305,7 +372,9 @@ public class GameManager : MonoBehaviour
                         InterfaceGameState.instance.getGameManager().resetGame(gameState);
                         
                         goal = true;
-          
+
+                        j = gameState.j1;
+
                 }
                 if (frisbee.getPosition().x <= -19 && frisbee.getPosition().x >= -21) {
                         if (frisbee.getPosition().y >= -6 && frisbee.getPosition().y <= 6) {
@@ -318,10 +387,10 @@ public class GameManager : MonoBehaviour
                         frisbee.setDirection(new Vector2(0,0));
                         goal = true;
                         InterfaceGameState.instance.getGameManager().resetGame(gameState);
-                        
+                        j = gameState.j2;
                 }
 
-                return goal;
+                return (goal,j);
         }
 
 
@@ -346,8 +415,7 @@ public class GameManager : MonoBehaviour
         private bool isCatch(Joueur j, Frisbee f)
         {
                 float distance = Vector2.Distance(j.getPosition(), f.getPosition());
-            
-                Debug.DrawRay(j.getPosition(),Vector3.left*2.5f);
+                
                 if(distance < 2.5f)
                 {
                         return true;
@@ -375,7 +443,6 @@ public class GameManager : MonoBehaviour
              
                 frisbee.setDirection(direction);
                 
-             
 
         }       
         
@@ -413,21 +480,18 @@ public class GameManager : MonoBehaviour
                      h,
                      v));
 
-
                 if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ))
                 { 
                       joueur.setPosition( (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f);        
                 }
                 
-             
-                
+
         }
         
         IEnumerator RandomMove(Joueur joueur, bool f)
         {
                 float counter = Random.Range(0.05f,0.3f);
                 joueur.setDirection(new Vector2(Random.Range(-1f,1f), Random.Range(-1f,1f)));
-                
                 
                 
                 while (counter >0)
@@ -445,24 +509,84 @@ public class GameManager : MonoBehaviour
                 }
                 StartCoroutine( RandomMove(gameState.j2,true)); 
         }
-
-        private void RandomMove(Joueur joueur)
+        
+        private void SetRandomAction(Joueur joueur,List<Action> actions)
         {
-                if (joueur.counter <= 0)
-                {
-                        joueur.setDirection(new Vector2(Random.Range(-1f,1f), Random.Range(-1f,1f)));
-                        joueur.counter = Random.Range(0.05f,0.3f);
-                }
+                if (joueur.counter > 0) return;
                 
-                joueur.counter -= 0.02f;
-            
-                if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ))
-                { 
-                        joueur.setPosition(   (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f) ;
-                }
+                Action a = actions[Random.Range(0, actions.Count)];
                 
-
+                joueur.counter = a.time;
+                joueur.setDirection(a.direction);
+                
         }
+
+        public void SetMCTSACTION(Joueur joueur,Action a)
+        {
+              
+             
+                if (joueur.counter > 0) return;
+                
+                if (!gameState.simulation)
+                {
+                        if (!gameState.frisbee.getIsCatched() && gameState.frisbee.getJoueur().PlayerTag == gameState.j1.PlayerTag)
+                        {
+                                MCTSaction = mcts.ComputeMCTS(joueur, InterfaceGameState.instance.CreateInstance(gameState));
+                        } 
+                }
+                
+                
+                
+                joueur.counter = a.time;
+                joueur.setDirection(a.direction);
+        }
+        
+        public void SetAction(Joueur joueur,Action a)
+        {
+                Debug.Log(joueur.PlayerTag);
+                joueur.counter = a.time;
+                joueur.setDirection(a.direction);
+                
+        }
+
+        private bool MoveMCTS(Joueur joueur)
+        {
+                joueur.counter -= 0.02f;
+                
+                if (joueur.counter > 0)
+                {
+                        if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ))
+                        { 
+                                joueur.setPosition(   (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f) ;
+                        }
+
+                        return true;
+                }
+
+                return false;
+        }
+        
+        
+        private bool RandomMove(Joueur joueur)
+        {
+                joueur.counter -= 0.02f;
+                
+                if (joueur.counter > 0)
+                {
+                        if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ))
+                        { 
+                                joueur.setPosition(   (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f) ;
+                        }
+
+                        return true;
+                }
+                
+                return false;
+        }
+        
+        
+        
+        
         
 
         

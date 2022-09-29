@@ -679,7 +679,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &601364207
 Transform:
   m_ObjectHideFlags: 0
@@ -2557,6 +2557,7 @@ GameObject:
   - component: {fileID: 1727119188}
   - component: {fileID: 1727119190}
   - component: {fileID: 1727119191}
+  - component: {fileID: 1727119192}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2618,15 +2619,29 @@ MonoBehaviour:
       setCount: 0
     moveSpeed: 25
     counter: 0
+    PlayerTag: Joueur1
   j2:
     score:
       points: 0
       setCount: 0
     moveSpeed: 25
     counter: 0
+    PlayerTag: Joueur 2
   frisbee:
     Speed: 30
   gameManager: {fileID: 1727119190}
+--- !u!114 &1727119192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727119186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6332726794d5cae4ca41c0c8c149a4f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1775393936
 GameObject:
   m_ObjectHideFlags: 0
