@@ -18,11 +18,14 @@ public class Party : MonoBehaviour
     private bool endgame;
     private string victoryphrase;
     private GameObject g;
+    private GameObject button;
 
     private GameState gameState;
     // Start is called before the first frame update
     void Start()
     {
+        button = GameObject.Find("return button");
+        button.SetActive(false);
         gameState = GameState.Instance;
         j1 = gameState.j1.getScore();
         j2 = gameState.j2.getScore();
@@ -94,6 +97,7 @@ public class Party : MonoBehaviour
             {
                 countdowntxt.text = victoryphrase;
                 countdowntxt.fontSize = 15;
+                button.SetActive(true);
             }
             
         }

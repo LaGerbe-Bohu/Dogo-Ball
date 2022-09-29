@@ -66,12 +66,12 @@ public class GameManager : MonoBehaviour
                 if (gameState.j1.score.points >= 15)
                 {
                         GameState.J1set++;
-                        SceneManager.LoadScene(0);
+                        SceneManager.LoadScene(1);
                 }
                 else if (gameState.j2.score.points >= 15)
                 {
                         GameState.J2set++;
-                        SceneManager.LoadScene(0);  
+                        SceneManager.LoadScene(1);  
                 }
 
 
