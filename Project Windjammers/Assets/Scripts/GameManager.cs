@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -13,11 +14,11 @@ public struct Action
         public Vector2 direction;
 }
 
-
-
 public class GameManager : MonoBehaviour
 {
+        
         public List<BoxCollider2D> walls;
+        private List<Bounds> bounds;
         public Transform j1;
         public Transform j2;
         public Transform frisbee;
@@ -26,49 +27,39 @@ public class GameManager : MonoBehaviour
         private GameState gameState;
         private MCTSManager mcts;
         
-        private bool movePlayer = false;
-
         [HideInInspector]
         public List<Action> actions;
 
-        private float count = 0;
-        
         public Action MCTSaction;
         
-        // Utiliser GameState.[qqch] pour récuperer le joueur par exemple pour le frisbee
-        // Ca serait bien qu'il y ai que cette classe qui ai le droit de modifier ces objets
+   
         
-        // Intégrer ici je pense : Les déplacement de joueur, le lancé de frisbee ainsi que les 
-        // le rebou de celui-ci sur le mur. Le catch.
-        // 
-
         private void Start()
         {
-
+                
                 gameState = InterfaceGameState.instance.gameState;
                 gameState.initialposf = frisbee.transform.position;
                 mcts = new MCTSManager();
                 actions = new List<Action>();
-
+                bounds = new List<Bounds>();
                 gameState.timer = 30;
                 
                 for (int x = -1; x < 2 ; x++)
                 {
                         for (int y = -1; y < 2; y++)
                         {
-                                for (float t = 0.05f; t < .3f; t+=0.025f)
-                                {
-                                        actions.Add(new Action(){direction = new Vector2(x,y), time = t });  
-                                }
-
                               
+                                actions.Add(new Action(){direction = new Vector2(x,y), time = 1f });  
+                                
                         }
                         
-
-                      
                 }
-                
-                
+
+                foreach (BoxCollider2D boxes in walls)
+                {
+                        bounds.Add(boxes.bounds);
+                }
+
 
 
                 initializeGame(gameState,false);
@@ -105,16 +96,6 @@ public class GameManager : MonoBehaviour
                         SceneManager.LoadScene(0);
                 }
                 
-                
-                if (Input.GetKeyDown(KeyCode.B))
-                {
-                        
-                       // mcts.SimulateGame(InterfaceGameState.instance.CreateInstance(gameState),new Action(){ direction = Vector2.one, time = 0});
-                        
-                      
-                }
-
-
                 RunFrame(gameState);
 
         }
@@ -127,6 +108,21 @@ public class GameManager : MonoBehaviour
 
         }
 
+        public void EmulateOneMove(GameState gameState)
+        {
+                if (gameState.movePlayer)
+                {
+                        Move(gameState.j1);
+                }
+                
+                if ( gameState.moveRandom )
+                {
+                        Move(gameState.j2);
+                }
+                
+                MoveFrisbee(gameState.frisbee);
+        }
+        
         public void RunSimulatedMovement(GameState gameState)
         {
                 if (!gameState.simulation) return;
@@ -134,13 +130,13 @@ public class GameManager : MonoBehaviour
                 if (gameState.movePlayer)
                 {
                         SetRandomAction(gameState.j1,actions);
-                        RandomMove(gameState.j1);
+                        Move(gameState.j1);
                 }
                 
                 if ( gameState.moveRandom )
                 {
                         SetRandomAction(gameState.j2,actions);
-                        RandomMove(gameState.j2);
+                        Move(gameState.j2);
                         
                 }
                 
@@ -160,9 +156,8 @@ public class GameManager : MonoBehaviour
                        
                    
                         SetMCTSACTION(gameState.j2,MCTSaction);
-                        MoveMCTS(gameState.j2);
-                      
-                        // RandomMove(gameState.j2);
+                        Move(gameState.j2);
+                  
                 }
                 
                 MoveFrisbee(gameState.frisbee);
@@ -270,7 +265,7 @@ public class GameManager : MonoBehaviour
  
                 if (isCatch(gameState.j2, gameState.frisbee)  && gameState.oldThrower != gameState.j2 && gameState.endResetGame  )
                 {
-                        //  ManageCatch();
+                    
                         StopAllCoroutines();
                         gameState.frisbee.setCatched(true);
                         gameState.frisbee.setDirection(new Vector2(0, 0));
@@ -356,10 +351,16 @@ public class GameManager : MonoBehaviour
 
                 if (gameState.timer <= 0)
                 {
-                        frisbee.setPosition(gameState.initialposf);
+                     
                         frisbee.setDirection(new Vector2(0,0));
-                        InterfaceGameState.instance.getGameManager().resetGame(gameState);
-                        this.gameState.timer = 30;
+                        
+                        if (!gameState.simulation)
+                        {
+                                frisbee.setPosition(gameState.initialposf);
+                                this.gameState.timer = 30;
+                                InterfaceGameState.instance.getGameManager().resetGame(gameState);
+                        }
+
                         return (true, new Joueur(Vector2.zero,Vector2.zero, 0,"personne",new Score(0,0)));
                 }
                 
@@ -373,9 +374,14 @@ public class GameManager : MonoBehaviour
                         else {
                                 scoreJ1.points+=5;
                         }
-                        frisbee.setPosition(gameState.initialposf);
+                        
                         frisbee.setDirection(new Vector2(0,0));
-                        InterfaceGameState.instance.getGameManager().resetGame(gameState);
+                        if (!gameState.simulation)
+                        {
+                                frisbee.setPosition(gameState.initialposf);
+                              
+                                InterfaceGameState.instance.getGameManager().resetGame(gameState);
+                        }
                         
                         goal = true;
 
@@ -389,10 +395,17 @@ public class GameManager : MonoBehaviour
                         else {
                                 scoreJ2.points+=5;
                         }
-                        frisbee.setPosition(gameState.initialposf);
-                        frisbee.setDirection(new Vector2(0,0));
+                       
                         goal = true;
-                        InterfaceGameState.instance.getGameManager().resetGame(gameState);
+                        
+                        frisbee.setDirection(new Vector2(0,0));
+                        if (!gameState.simulation)
+                        {
+                                frisbee.setPosition(gameState.initialposf);
+                                
+                                InterfaceGameState.instance.getGameManager().resetGame(gameState);
+                        }
+                        
                         j = gameState.j2;
                 }
 
@@ -431,10 +444,12 @@ public class GameManager : MonoBehaviour
 
         public bool collisionWall(Vector3 pos)
         { 
+            
                 bool find = false;
-                foreach (BoxCollider2D boxes in walls)
+
+                for (int i = 0; i < bounds.Count; i++)
                 {
-                        if (boxes.bounds.Contains(pos))
+                        if(bounds[i].Contains(pos) )
                         {
                                 find = true;
                         }
@@ -455,13 +470,15 @@ public class GameManager : MonoBehaviour
         public bool collisionWall(Vector3 pos,bool t)
         {
                 bool find = false;
-                foreach (BoxCollider2D boxes in walls)
+
+                for (int i = 0; i < bounds.Count; i++)
                 {
-                        if (boxes.bounds.Contains(pos) && boxes.name != "MiddleWall")
+                        if(bounds[i].Contains(pos) &&  walls[i].name != "MiddleWall")
                         {
                                 find = true;
                         }
                 }
+                
 
                 return find;
         }
@@ -494,28 +511,6 @@ public class GameManager : MonoBehaviour
 
         }
         
-        IEnumerator RandomMove(Joueur joueur, bool f)
-        {
-                float counter = Random.Range(0.05f,0.3f);
-                joueur.setDirection(new Vector2(Random.Range(-1f,1f), Random.Range(-1f,1f)));
-                
-                
-                while (counter >0)
-                {
-                        counter -= 0.02f;
-                        
-                        
-                        if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ))
-                        { 
-                                joueur.setPosition(   (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f) ;
-                        }
-                        
-                        
-                        yield return new WaitForFixedUpdate();
-                }
-                StartCoroutine( RandomMove(gameState.j2,true)); 
-        }
-        
         private void SetRandomAction(Joueur joueur,List<Action> actions)
         {
                 if (joueur.counter > 0) return;
@@ -535,10 +530,7 @@ public class GameManager : MonoBehaviour
                 
                 if (!gameState.simulation)
                 {
-                        if (!gameState.frisbee.getIsCatched() && gameState.frisbee.getJoueur().PlayerTag == gameState.j1.PlayerTag)
-                        {
-                                MCTSaction = mcts.ComputeMCTS(joueur, InterfaceGameState.instance.CreateInstance(gameState));
-                        } 
+                        MCTSaction = mcts.ComputeMCTS(joueur, InterfaceGameState.instance.CreateInstance(gameState));
                 }
                 
                 
@@ -554,34 +546,16 @@ public class GameManager : MonoBehaviour
                 joueur.setDirection(a.direction);
                 
         }
-
-        private bool MoveMCTS(Joueur joueur)
+        
+        private bool Move(Joueur joueur)
         {
                 joueur.counter -= 0.02f;
                 
                 if (joueur.counter > 0)
                 {
-                        if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ))
+                        if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection() * joueur.moveSpeed * 0.02f ))
                         { 
-                                joueur.setPosition(   (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f) ;
-                        }
-
-                        return true;
-                }
-
-                return false;
-        }
-        
-        
-        private bool RandomMove(Joueur joueur)
-        {
-                joueur.counter -= 0.02f;
-                
-                if (joueur.counter > 0)
-                {
-                        if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ))
-                        { 
-                                joueur.setPosition(   (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f) ;
+                                joueur.setPosition(   (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection() * joueur.moveSpeed * 0.02f) ;
                         }
 
                         return true;

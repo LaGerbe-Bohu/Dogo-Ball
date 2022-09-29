@@ -57,7 +57,7 @@ public class Joueur
     
     public Vector2 getDirection()
     {
-        return this.direction;
+        return this.direction.normalized;
     }
     
     

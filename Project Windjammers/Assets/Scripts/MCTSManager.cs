@@ -23,8 +23,8 @@ public class MCTSnode
 
 public class MCTSManager
 {
-    private const int NUMBER_TEST = 300;
-    private const int NUMBER_SIMULATION = 20;
+    private const int NUMBER_TEST = 250;
+    private const int NUMBER_SIMULATION = 10;
     
     
     private GameManager GameManager;
@@ -37,6 +37,11 @@ public class MCTSManager
         GameManager = InterfaceGameState.instance.gameManager;
         this.joueur = joueur;
         
+        
+        
+        GameManager.initializeGame(gameState,true);
+        gameState.simulation = true;
+        
         MCTSnode startNode = new MCTSnode()
         {
             parent = null,
@@ -47,6 +52,7 @@ public class MCTSManager
             FullyExpanded = false
         };
         
+        
         lstnodes.Add(startNode);
         
         for (int i = 0; i < NUMBER_TEST; i++)
@@ -54,14 +60,16 @@ public class MCTSManager
             MCTSnode selectedNode = Selection();
             MCTSnode newNode = Expland(selectedNode);
             int victoire = SimulateGame(newNode, newNode.action);
-            Backpropagation(newNode.parent,victoire);
-            
+            Backpropagation(newNode,victoire);
+          
         }
 
         float ratio = 0;
         MCTSnode n = null;
-        foreach (var node in startNode.childrens)
+        for (int i = 0; i < startNode.childrens.Count; i++)
         {
+            MCTSnode node = startNode.childrens[i];
+            
             if ( (node.numberWins / (float) node.numberSimulations) >= ratio)
             {
                 ratio = node.numberWins / (float) node.numberSimulations;
@@ -69,26 +77,80 @@ public class MCTSManager
             }
         }
         
+        
         Assert.IsNotNull(n);
 
         return n.action;
     }
-
-
-    public void Backpropagation(MCTSnode node,int victory)
+    
+    public MCTSnode Selection()
     {
-        MCTSnode n = node;
-        while (n != null)
+        float ex=   Random.Range(0f,1f);
+        MCTSnode result = null;
+        Assert.AreNotEqual(lstnodes.Count,0);
+        if (ex >= .3 || lstnodes.Count <= 1)
         {
-            n.numberSimulations += NUMBER_SIMULATION;
-            n.numberWins += victory;
-            n = n.parent;
+
+            result = lstnodes[Random.Range(0, lstnodes.Count)];
+        
+            
         }
-       
+        else
+        {
+            float maxRatio = 0;
+            float c = 0;
+            for (int i = 0; i < lstnodes.Count; i++)
+            {
+                MCTSnode Node = lstnodes[i];
+                
+                if (Node.numberWins / (float) Node.numberSimulations >= maxRatio )
+                {
+                    
+                    maxRatio = Node.numberWins / (float) Node.numberSimulations;
+                    result = Node;
+                }
+            }
+        }
+
+        Assert.IsNotNull(result);
+        
+        return result;
+    }
+
+    public MCTSnode Expland(MCTSnode node)
+    {
+        
+        Assert.IsNotNull(node);
+        Action ActionToplay;
+        
+        do
+        {
+            ActionToplay = GameManager.actions[Random.Range(0,GameManager.actions.Count)];
+        } while (findSameInput(node.parent,ActionToplay));
+
+
+        SimulateAction(node,ActionToplay); // Pour jouer un coup dans la simulation
+        
+        MCTSnode n =  new MCTSnode()
+        {
+            parent = node,
+            childrens = new List<MCTSnode>(),
+            GameState = InterfaceGameState.instance.CreateInstance(node.GameState),
+            numberWins = 0,
+            numberSimulations = 0,
+            FullyExpanded = false,
+            action = ActionToplay
+        };
+        
+        node.childrens.Add(n);
+        lstnodes.Add(n);
+
+        return n;
     }
     
     bool findSameInput(MCTSnode root,Action action)
     {
+        // cette fonction permet de trouver une action dans les enfant de la node
         bool trouver = false;
         int c = 0;
         if (root != null)
@@ -119,70 +181,46 @@ public class MCTSManager
         return trouver;
     }
     
-    
-    public MCTSnode Expland(MCTSnode node)
+    public void SimulateAction(MCTSnode node,Action action)
     {
+     
         
-        Assert.IsNotNull(node);
-        Action ActionToplay;
+        GameState gameState = node.GameState;
         
-        do
-        {
-            ActionToplay = GameManager.actions[Random.Range(0,GameManager.actions.Count)];
-        } while (findSameInput(node.parent,ActionToplay));
+        Joueur j = node.GameState.j1.PlayerTag == this.joueur.PlayerTag
+            ? node.GameState.j1
+            : node.GameState.j2;
         
+        GameManager.SetAction(j, action);
+        int c = 0;
         
-        MCTSnode n =  new MCTSnode()
-        {
-            parent = node,
-            childrens = new List<MCTSnode>(),
-            GameState = InterfaceGameState.instance.CreateInstance(node.GameState),
-            numberWins = 0,
-            numberSimulations = 0,
-            FullyExpanded = false,
-            action = ActionToplay
-        };
-        
-        node.childrens.Add(n);
-        lstnodes.Add(n);
+        Assert.AreEqual(gameState.simulation,true);
 
-        return n;
-    }
-
-    public MCTSnode Selection()
-    {
-        float ex=   Random.Range(0f,1f);
-        MCTSnode result = null;
-        Assert.AreNotEqual(lstnodes.Count,0);
-        if (ex >= .5 || lstnodes.Count <= 1)
-        { 
-            result = lstnodes[Random.Range(0, lstnodes.Count)];
-        }
-        else
+        
+        while (j.counter > 0)
         {
-            float maxRatio = 0;
-            foreach (var Node in lstnodes)
+            c++;
+            
+            Assert.AreNotEqual(c,500);
+            
+            if (c >= 100)
             {
-                if (Node.numberWins / (float) Node.numberSimulations >= maxRatio)
-                {
-                    maxRatio = Node.numberWins / (float) Node.numberSimulations;
-                    result = Node;
-                }
+                break;
             }
-        }
 
-        Assert.IsNotNull(result);
+            GameManager.RunFrame(gameState);
+            GameManager.EmulateOneMove(gameState);
+        }
         
-        return result;
     }
-    
+ 
     
     public int SimulateGame(MCTSnode node,Action action)
     {
         int numberVictoire = 0;
         Joueur j = null;
 
-        GameState gameState = node.GameState;
+        GameState gameState = InterfaceGameState.instance.CreateInstance(node.GameState);
         
         Assert.AreNotEqual(this.joueur,null);
         
@@ -192,22 +230,11 @@ public class MCTSManager
             float c = 0;
             bool finish = false;
             GameManager = InterfaceGameState.instance.getGameManager();
-          //  DebugDrawer debug = DebugDrawer.instance;
-
-            GameManager.initializeGame(gameState,true);
-            gameState.simulation = true;
-            GameManager.SetAction(this.joueur, action);
-            //debug.DrawSphere(gameState.j1.getPosition(),1.5f,PrimitiveType.Cylinder);
-            //debug.DrawSphere(gameState.j2.getPosition(),1.5f,PrimitiveType.Capsule);
-            //debug.DrawSphere(gameState.frisbee.getPosition(),1.5f,PrimitiveType.Sphere);
+     
           
             while ( !finish)
             {
                 c++;
-
-       
-            
-               
                 
                 GameManager.RunFrame(gameState);
                 GameManager.RunSimulatedMovement(gameState);
@@ -216,24 +243,11 @@ public class MCTSManager
                 
                 if (c >= 15000)
                 {
-                    Debug.LogError("Simulation à pris plus de  tics");
+                    Debug.LogError("Garde de fou simulation");
                     break;
                     
                 }
-                    
-                //   Debug.DrawLine( gameState.j1.getPosition()-new Vector2(0,.1f),gameState.j1.getPosition()+new Vector2(0,.1f),Color.red,10f);
-                // Debug.DrawLine( gameState.j2.getPosition()-new Vector2(0,.1f),gameState.j2.getPosition()+new Vector2(0,.1f),Color.green,10f);
-                //Debug.DrawLine( gameState.frisbee.getPosition()-new Vector2(0,.1f),gameState.frisbee.getPosition()+new Vector2(0,.1f),Color.blue,10f);
-
-                //  debug.DrawSphere(gameState.j1.getPosition(),0.5f,PrimitiveType.Cylinder);
-                // debug.DrawSphere(gameState.j2.getPosition(),0.5f,PrimitiveType.Capsule);
-                //debug.DrawSphere(gameState.frisbee.getPosition(),0.5f,PrimitiveType.Sphere);
-                
-               // Debug.Log("J1 ==> " + gameState.j1.getPosition() + " |" + "J2 ==> " + gameState.j2.getPosition() + " |"+ "Frisbee ==> " + gameState.frisbee.getPosition() + " |");
-              
             }
-            
-            
 
             if (j.PlayerTag == this.joueur.PlayerTag)
             {
@@ -252,6 +266,44 @@ public class MCTSManager
         return numberVictoire;
     }
     
+        
+    public void Backpropagation(MCTSnode node,int victory)
+    {
+        MCTSnode n = node.parent;
+
+        if (GameManager.Goal(node.GameState).Item1)
+        {
+            node.FullyExpanded = true;
+        }
+
+        lstnodes.Remove(node); // étant donné que chasque recherche 
+        
+        while (n != null)
+        {
+            bool trouver = false;
+            for (int i = 0; i < n.childrens.Count; i++)
+            {
+                if (!n.childrens[i].FullyExpanded)
+                {
+                    trouver = true;
+                }
+            }
+
+            n.FullyExpanded = !trouver;
+
+            if (n.FullyExpanded)
+            {
+                lstnodes.Remove(node);
+            }
+            
+            n.numberSimulations += NUMBER_SIMULATION;
+            n.numberWins += victory;
+            n = n.parent;
+        }
+       
+    }
+
+
     
     
     
