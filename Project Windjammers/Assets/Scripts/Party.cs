@@ -18,6 +18,7 @@ public class Party : MonoBehaviour
     private bool endgame;
     private string victoryphrase;
     private GameObject g;
+    private GameObject button;
 
     private GameState gameState;
     // Start is called before the first frame update
@@ -35,8 +36,6 @@ public class Party : MonoBehaviour
         player2score.enabled=false;
         gameTimetxt.enabled=false;
         endgame = false;
-
-
     
         if (gameState.j1.getScore().setCount >= 3)
         {
@@ -96,6 +95,7 @@ public class Party : MonoBehaviour
             {
                 countdowntxt.text = victoryphrase;
                 countdowntxt.fontSize = 15;
+                button.SetActive(true);
             }
             
         }
