@@ -35,6 +35,8 @@ public class Party : MonoBehaviour
         player2score.enabled=false;
         gameTimetxt.enabled=false;
         endgame = false;
+
+
     
         if (gameState.j1.getScore().setCount >= 3)
         {
@@ -61,7 +63,7 @@ public class Party : MonoBehaviour
             else {
                 gameTime = 0;
             }
-            gameTimetxt.text = gameTime.ToString("F2");
+            gameTimetxt.text = gameState.timer.ToString("F2");
             player1score.text = j1.setCount.ToString()+" / "+j1.points.ToString();
             player2score.text = j2.setCount.ToString()+" / "+j2.points.ToString();
         }

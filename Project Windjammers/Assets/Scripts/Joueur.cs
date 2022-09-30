@@ -42,7 +42,7 @@ public class Joueur
     
     public  void setDirection(Vector2 dir)
     {
-        this.direction = dir;   
+        this.direction = dir.normalized;   
     }
     
     public Vector2 getPosition()
@@ -57,7 +57,7 @@ public class Joueur
     
     public Vector2 getDirection()
     {
-        return this.direction.normalized;
+        return this.direction;
     }
     
     

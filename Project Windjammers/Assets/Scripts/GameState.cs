@@ -22,6 +22,7 @@ public class GameState
     public bool movePlayer = false;
     public bool freezeInput = false;
     public bool simulation = false;
+    public Action randomAction;
     
     public Joueur oldThrower;
     public Vector2 initialposf;
@@ -71,6 +72,7 @@ public class GameState
         this.movePlayer = gameState.movePlayer;
         this.freezeInput = gameState.freezeInput;
         this.simulation = gameState.simulation;
+        this.randomAction = gameState.randomAction;
     }
 
 
