@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
                         for (int y = -1; y < 2; y++)
                         {
                               
-                                actions.Add(new Action(){direction = new Vector2(x,y), time = 1f });  
+                                actions.Add(new Action(){direction = new Vector2(x,y), time = .016f*5 });  
                                 
                         }
                         
@@ -531,6 +531,7 @@ public class GameManager : MonoBehaviour
                 if (!gameState.simulation)
                 {
                         MCTSaction = mcts.ComputeMCTS(joueur, InterfaceGameState.instance.CreateInstance(gameState));
+                        
                 }
                 
                 

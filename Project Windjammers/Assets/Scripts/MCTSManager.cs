@@ -23,8 +23,8 @@ public class MCTSnode
 
 public class MCTSManager
 {
-    private const int NUMBER_TEST = 250;
-    private const int NUMBER_SIMULATION = 10;
+    private const int NUMBER_TEST = 500;
+    private const int NUMBER_SIMULATION = 60;
     
     
     private GameManager GameManager;
@@ -88,7 +88,7 @@ public class MCTSManager
         float ex=   Random.Range(0f,1f);
         MCTSnode result = null;
         Assert.AreNotEqual(lstnodes.Count,0);
-        if (ex >= .3 || lstnodes.Count <= 1)
+        if (ex <= 0.8 || lstnodes.Count <= 1)
         {
 
             result = lstnodes[Random.Range(0, lstnodes.Count)];
@@ -274,9 +274,10 @@ public class MCTSManager
         if (GameManager.Goal(node.GameState).Item1)
         {
             node.FullyExpanded = true;
+            lstnodes.Remove(node); 
         }
 
-        lstnodes.Remove(node); // étant donné que chasque recherche 
+      
         
         while (n != null)
         {
