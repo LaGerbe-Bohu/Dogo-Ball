@@ -13,6 +13,7 @@ public class Frisbee
     private Vector2 direction;
     private Joueur joueur;
     private bool isCatched;
+    
     public Frisbee(Vector2 position,Vector2 direction,float speed,Joueur joueur)
     {
         this.position = position;

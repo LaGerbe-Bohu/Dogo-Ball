@@ -21,8 +21,11 @@ public class GameManager : MonoBehaviour
         
         public List<BoxCollider2D> walls;
         public List<Transform> CenterPoint;
-        private float HightPlayer = 0;
-        private float WidthPlayer = 0;
+        
+        [HideInInspector]
+        public float HightPlayer = 0;
+        [HideInInspector]
+        public float WidthPlayer = 0;
         
         private List<Bounds> bounds;
         public Transform j1;
@@ -50,15 +53,20 @@ public class GameManager : MonoBehaviour
                 actions = new List<Action>();
                 bounds = new List<Bounds>();
                 gameState.timer = 30;
+                
+                
 
-                HightPlayer = walls[0].bounds.size.x;
-                WidthPlayer = walls[0].bounds.size.y;
+                HightPlayer = walls[^1].bounds.size.y; 
+                WidthPlayer = walls[0].bounds.size.x;
+
+                gameState.j1.sizeBound = new Vector2(WidthPlayer/2f, HightPlayer);
+                gameState.j2.sizeBound = new Vector2(WidthPlayer/2f, HightPlayer);
                
-                actions.Add(new Action(){direction = new Vector2(1,0), time = .016f*5 });  
-                actions.Add(new Action(){direction = new Vector2(-1,0), time = .016f*5 });  
-                actions.Add(new Action(){direction = new Vector2(0,1), time = .016f*5 });  
-                actions.Add(new Action(){direction = new Vector2(0,-1), time = .016f*5 });  
-                actions.Add(new Action(){direction = new Vector2(0,0), time = .016f*5 });  
+                actions.Add(new Action(){direction = new Vector2(1,0), time = .02f*5 });  
+                actions.Add(new Action(){direction = new Vector2(-1,0), time = .02f*5 });  
+                actions.Add(new Action(){direction = new Vector2(0,1), time = .02f*5 });  
+                actions.Add(new Action(){direction = new Vector2(0,-1), time = .02f*5 });  
+                actions.Add(new Action(){direction = new Vector2(0,0), time = .02f*5 });  
                 
                 for (int x = -1; x < 2 ; x++)
                 {
@@ -183,7 +191,8 @@ public class GameManager : MonoBehaviour
                 MoveFrisbee(gameState.frisbee);
              
         }
-
+        
+        
         public void RunFrame(GameState gameState)
         {
                 bool b = Goal(gameState).Item1;
@@ -193,7 +202,7 @@ public class GameManager : MonoBehaviour
                         ManageCatch(gameState);
                 }
 
-                gameState.timer -= 0.01f;
+                gameState.timer -= 0.02f / 3f;
                 
                 
                 
@@ -241,7 +250,7 @@ public class GameManager : MonoBehaviour
                 if (gameState.frisbee.getIsCatched() )
                 {
                         
-                        if (gameState.frisbee.getJoueur() == gameState.j1 && !gameState.simulation )
+                        if (gameState.frisbee.getJoueur() == gameState.j1 && !gameState.simulation && false )
                         {
                                 gameState.catchedTimer -= 0.02f;
                                 if ( (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.RightArrow)) || (Input.GetKey(KeyCode.Space)) || gameState.catchedTimer<=0)
@@ -263,7 +272,7 @@ public class GameManager : MonoBehaviour
                                         throwFrisbee(gameState.frisbee, new Vector2(1, -1));
                                         gameState.catchedTimer = 3;
                                         gameState.movePlayer = true;
-                                        MCTSaction = mcts.ComputeMCTS(gameState.j2, InterfaceGameState.instance.CreateInstance(gameState));
+                                    
                                 }
                         
                                 if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.UpArrow) )
@@ -273,7 +282,7 @@ public class GameManager : MonoBehaviour
                                         throwFrisbee(gameState.frisbee,new Vector2(1,1));
                                         gameState.catchedTimer = 3;
                                         gameState.movePlayer = true;
-                                        MCTSaction = mcts.ComputeMCTS(gameState.j2, InterfaceGameState.instance.CreateInstance(gameState));
+                                     
                                 }
                                 
                         }
@@ -282,13 +291,13 @@ public class GameManager : MonoBehaviour
                                 
                                 gameState.frisbee.setCatched(false);
                                 gameState.moveRandom = true;
-                                throwFrisbee(gameState.frisbee,new Vector2(-1,Random.Range(-1,2)));
+                                throwFrisbee(gameState.frisbee,new Vector2(-1,gameState.j2.getDirection().y));
                         }
                         else
                         {
                                 gameState.frisbee.setCatched(false);
                                 gameState.movePlayer = true;
-                                throwFrisbee(gameState.frisbee,new Vector2(1,Random.Range(-1,2)));
+                                throwFrisbee(gameState.frisbee,new Vector2(1,this.gameState.j1.getDirection().y));
                         }
                 }
                 
@@ -464,7 +473,7 @@ public class GameManager : MonoBehaviour
         {
                 frisbee.setPosition( (Vector3)frisbee.getPosition() + (Vector3)frisbee.GetDirection().normalized*0.02f*frisbee.Speed);
               
-                if(InterfaceGameState.instance.getGameManager().collisionWall(frisbee.getPosition(),true))
+                if(InterfaceGameState.instance.getGameManager().IsCollide(frisbee.getPosition(),Vector2.zero, WidthPlayer,HightPlayer))
                 {    
                         frisbee.setDirection(new Vector2(frisbee.GetDirection().x, -frisbee.GetDirection().y));
             
@@ -498,14 +507,13 @@ public class GameManager : MonoBehaviour
                 return find;
         }
 
-        public bool IsCollide(Vector3 originPoint, Vector2 center, float height,float width)
+        public bool IsCollide(Vector3 originPoint, Vector2 center, float width,float height)
         {
-                if (Math.Abs(originPoint.x - center.x) > width / 2)
+                
+                
+                if (Math.Abs(originPoint.x - center.x) > width / 2 || Math.Abs(originPoint.y - center.y) > height / 2)
                 {
-                        if (Math.Abs(originPoint.y - center.y) > height / 2)
-                        {
-                                return true;
-                        }    
+                        return true;
                 }
 
                 return false;
@@ -555,12 +563,16 @@ public class GameManager : MonoBehaviour
                 joueur.setDirection(new Vector2(
                      h,
                      v));
-                
 
-                if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f ))
-                { 
-                      joueur.setPosition( (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f);        
+
+                if (!IsCollide(
+                        ((Vector3) joueur.getPosition() +
+                         (Vector3) joueur.getDirection().normalized * joueur.moveSpeed * 0.02f),
+                        CenterPoint[0].position, (WidthPlayer) / 2f, HightPlayer-1f ))
+                {
+                        joueur.setPosition( (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f);        
                 }
+                
                 
 
         }
@@ -583,9 +595,9 @@ public class GameManager : MonoBehaviour
                 if (joueur.counter > 0) return;
                 
                 if (!gameState.simulation )
-                {
-                
-                        MCTSaction = mcts.ComputeMCTS(joueur, InterfaceGameState.instance.CreateInstance(gameState));
+                { 
+                        GC.Collect();
+                       MCTSaction = mcts.ComputeMCTS(joueur, InterfaceGameState.instance.CreateInstance(gameState));
                       
                 }
 
@@ -608,7 +620,8 @@ public class GameManager : MonoBehaviour
                 
                 if (joueur.counter > 0)
                 {
-                        if (!collisionWall((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection() * joueur.moveSpeed * 0.02f ))
+                        
+                        if (!IsCollide(((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection() * joueur.moveSpeed * 0.02f ),joueur.center,joueur.sizeBound.x,joueur.sizeBound.y))
                         { 
                                 joueur.setPosition(   (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection() * joueur.moveSpeed * 0.02f) ;
                         }

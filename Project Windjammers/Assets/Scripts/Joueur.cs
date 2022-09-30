@@ -13,8 +13,10 @@ public class Joueur
     [HideInInspector]
     public float counter;
     public string PlayerTag;
+    public Vector2 center;
+    public Vector2 sizeBound;
     
-    public Joueur(Vector2 position, Vector2 direction,float moveSpeed,string PlayerTag,Score score)
+    public Joueur(Vector2 position, Vector2 direction,float moveSpeed,string PlayerTag,Vector2 center, Vector2 sizeBound,Score score)
     {
         this.position = position;
         this.direction = direction;
@@ -22,6 +24,8 @@ public class Joueur
         this.moveSpeed = moveSpeed;
         this.PlayerTag = PlayerTag;
         this.counter = 0;
+        this.center = center;
+        this.sizeBound = sizeBound;
     }
 
     public Joueur(Joueur joueur)
@@ -32,6 +36,8 @@ public class Joueur
         this.moveSpeed = joueur.moveSpeed;
         this.PlayerTag = joueur.PlayerTag;
         this.counter = 0;
+        this.center = joueur.center;
+        this.sizeBound = joueur.sizeBound;
     }
     
     
