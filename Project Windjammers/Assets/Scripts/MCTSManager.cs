@@ -23,8 +23,8 @@ public class MCTSnode
 
 public class MCTSManager
 {
-    private const int NUMBER_TEST = 1500;
-    private const int NUMBER_SIMULATION = 50;
+    private const int NUMBER_TEST = 1000;
+    private const int NUMBER_SIMULATION = 30;
     
     
     private GameManager GameManager;
@@ -61,8 +61,10 @@ public class MCTSManager
             Assert.AreNotEqual(selectedNode.FullyExpanded,true);
             MCTSnode newNode = Expland(selectedNode);
 
-            Assert.AreNotEqual(newNode,null);
-            
+            if (newNode == null)
+            {
+                continue;
+            }
             int victoire = SimulateGame(newNode, newNode.action);
             Backpropagation(newNode,victoire);
           

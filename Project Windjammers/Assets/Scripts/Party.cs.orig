@@ -18,12 +18,19 @@ public class Party : MonoBehaviour
     private bool endgame;
     private string victoryphrase;
     private GameObject g;
+    private GameObject button;
 
     private GameState gameState;
     // Start is called before the first frame update
     void Start()
     {
+<<<<<<< HEAD
+        gameState = InterfaceGameState.instance.gameState;
+=======
+        button = GameObject.Find("return button");
+        button.SetActive(false);
         gameState = GameState.Instance;
+>>>>>>> 1c97d96734fbcfd5e142cd09f9bc7088a618c62a
         j1 = gameState.j1.getScore();
         j2 = gameState.j2.getScore();
         gameTime = roundTime;
@@ -36,14 +43,16 @@ public class Party : MonoBehaviour
         gameTimetxt.enabled=false;
         endgame = false;
 
-        if (gameState.j1.getScore().setCount == 3)
+
+    
+        if (gameState.j1.getScore().setCount >= 3)
         {
-            victoryphrase = "Vous avez gagné avec un score de : " + gameState.j1.getScore().setCount + " à " + gameState.j2.getScore().setCount;
+            victoryphrase = "Vous avez gagnÃ© avec un score de : " + gameState.j1.getScore().setCount + " Ã  " + gameState.j2.getScore().setCount;
             endgame = true;
         }
-        if (gameState.j2.getScore().setCount == 3)
+        if (gameState.j2.getScore().setCount >= 3)
         {
-            victoryphrase = "Vous avez perdu avec un score de : " + gameState.j2.getScore().setCount + " à " + gameState.j1.getScore().setCount;
+            victoryphrase = "Vous avez perdu avec un score de : " + gameState.j2.getScore().setCount + " Ã  " + gameState.j1.getScore().setCount;
             endgame = true;
         }
     }
@@ -61,17 +70,11 @@ public class Party : MonoBehaviour
             else {
                 gameTime = 0;
             }
-            gameTimetxt.text = gameTime.ToString("F2");
+            gameTimetxt.text = gameState.timer.ToString("F2");
             player1score.text = j1.setCount.ToString()+" / "+j1.points.ToString();
             player2score.text = j2.setCount.ToString()+" / "+j2.points.ToString();
         }
         else {
-<<<<<<< HEAD
-            if (countdown > 0) {
-                countdown -= Time.deltaTime*2f;
-                if (countdown >= 1) {
-                    countdowntxt.text = ((int)countdown).ToString();
-=======
             if (!endgame)
             {
                 if (countdown > 0)
@@ -85,7 +88,6 @@ public class Party : MonoBehaviour
                     {
                         countdowntxt.text = "GO!";
                     }
->>>>>>> ccc5ccbd7485aa20abfe5a9097a7a91f0e67389c
                 }
                 else
                 {
@@ -101,6 +103,7 @@ public class Party : MonoBehaviour
             {
                 countdowntxt.text = victoryphrase;
                 countdowntxt.fontSize = 15;
+                button.SetActive(true);
             }
             
         }

@@ -6,7 +6,12 @@ using UnityEngine.SceneManagement;
 public class Menu : MonoBehaviour
 {
 
-    public void beginGame() {
+    public void beginGame()
+    {
+        InterfaceGameState.J1set = 0;
+        InterfaceGameState.J2set = 0;
+        
+
         SceneManager.LoadScene(1);
     }
 

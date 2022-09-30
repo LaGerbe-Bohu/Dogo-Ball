@@ -89,14 +89,8 @@ public class GameManager : MonoBehaviour
                 gameState.freezeInput = true;
                 gameState.gameStarted = true;
                 gameState.catchedTimer = 3;
+                gameState.movePlayer = false;
 
-
-                if (!gameState.simulation)
-                {
-                        gameState.frisbee.setDirection(new Vector2());
-                }  
-                
-                
                 if (gameState.frisbee.GetDirection() == new Vector2())      
                 {
                         float random = Random.Range(0, 1f);
@@ -132,12 +126,22 @@ public class GameManager : MonoBehaviour
         {
                 if (gameState.movePlayer)
                 {
+<<<<<<< HEAD
                         Move(gameState.j1);
+=======
+                        GameState.J1set++;
+                        SceneManager.LoadScene(1);
+>>>>>>> 1c97d96734fbcfd5e142cd09f9bc7088a618c62a
                 }
                 
                 if ( gameState.moveRandom )
                 {
+<<<<<<< HEAD
                         Move(gameState.j2);
+=======
+                        GameState.J2set++;
+                        SceneManager.LoadScene(1);  
+>>>>>>> 1c97d96734fbcfd5e142cd09f9bc7088a618c62a
                 }
                 
                 MoveFrisbee(gameState.frisbee);
@@ -193,19 +197,19 @@ public class GameManager : MonoBehaviour
                         ManageCatch(gameState);
                 }
 
-                gameState.timer -= 0.01f;
+                gameState.timer -= 0.02f;
                 
                 
                 
                 if (gameState.j1.score.points >= 15 && !gameState.simulation)
                 {
                         InterfaceGameState.J1set++;
-                        SceneManager.LoadScene(1);
+                        SceneManager.LoadScene(0);
                 }
                 else if (gameState.j2.score.points >= 15 &&  !gameState.simulation)
                 {
                         InterfaceGameState.J2set++;
-                        SceneManager.LoadScene(1);  
+                        SceneManager.LoadScene(0);  
                 }
 
 
@@ -213,19 +217,17 @@ public class GameManager : MonoBehaviour
                 {
                         if (gameState.j1.score.points > gameState.j2.score.points )
                         {
-                                InterfaceGameState.J1set++;
-                                SceneManager.LoadScene(1);
+                                InterfaceGameState.J2set++;
+                                SceneManager.LoadScene(0);
                         }
                         else if(gameState.j1.score.points < gameState.j2.score.points)
                         {
                                 InterfaceGameState.J2set++;
-                                SceneManager.LoadScene(1);  
+                                SceneManager.LoadScene(0);  
                         }
                         else
                         {
-                                InterfaceGameState.J1set++;
-                                InterfaceGameState.J2set++;
-                                SceneManager.LoadScene(1);  
+                                SceneManager.LoadScene(0);  
                         }
                 }
                 
@@ -251,8 +253,7 @@ public class GameManager : MonoBehaviour
                                         throwFrisbee(gameState.frisbee,new Vector2(1,0));
                                         gameState.catchedTimer = 3;
                                         gameState.movePlayer = true;
-                                        
-                                        
+                                     
                                         
                                 }
                         
@@ -426,7 +427,7 @@ public class GameManager : MonoBehaviour
                         goal = true;
 
                         j = gameState.j1.PlayerTag;
-                        
+
                 }
                 if (frisbee.getPosition().x <= -19 ) {
                         if (frisbee.getPosition().y >= -6 && frisbee.getPosition().y <= 6) {
