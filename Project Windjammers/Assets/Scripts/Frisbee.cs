@@ -13,6 +13,7 @@ public class Frisbee
     private Vector2 direction;
     private Joueur joueur;
     private bool isCatched;
+    private Vector2 sDirection;
     
     public Frisbee(Vector2 position,Vector2 direction,float speed,Joueur joueur)
     {
@@ -21,6 +22,7 @@ public class Frisbee
         this.joueur = joueur;
         this.Speed = speed;
         isCatched = false;
+        sDirection = direction * this.Speed;
     }
 
     public Frisbee(Frisbee frisbee)
@@ -31,6 +33,7 @@ public class Frisbee
         this.joueur = frisbee.joueur;
         this.Speed = frisbee.Speed;
         this.isCatched = frisbee.isCatched;
+        sDirection =  direction * this.Speed;
     }   
     
     public Joueur getJoueur()
@@ -53,8 +56,12 @@ public class Frisbee
     {
         this.isCatched = s;
     }
-    
-  
+
+
+    public Vector2 getSpeededDirection()
+    {
+        return this.sDirection;
+    }
 
     public Vector2 getPosition()
     {
@@ -73,7 +80,8 @@ public class Frisbee
     }
     public void setDirection(Vector2 dir)
     {
-        this.direction = dir;
+        this.direction = dir.normalized;
+        this.sDirection = this.direction * this.Speed;
     }
 
     

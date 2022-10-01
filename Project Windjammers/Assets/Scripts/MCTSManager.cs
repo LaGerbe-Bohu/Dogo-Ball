@@ -29,7 +29,7 @@ public class MCTSnode
 
 public class MCTSManager
 {
-    private const int NUMBER_TEST = 1500;
+    private const int NUMBER_TEST = 2500; // 1500
     private const int NUMBER_SIMULATION = 30;
 
     private MCTSnode[] lstNodes;

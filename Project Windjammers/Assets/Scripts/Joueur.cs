@@ -15,6 +15,7 @@ public class Joueur
     public string PlayerTag;
     public Vector2 center;
     public Vector2 sizeBound;
+    public Vector2 rawDirection;
     
     public Joueur(Vector2 position, Vector2 direction,float moveSpeed,string PlayerTag,Vector2 center, Vector2 sizeBound,Score score)
     {
@@ -26,6 +27,7 @@ public class Joueur
         this.counter = 0;
         this.center = center;
         this.sizeBound = sizeBound;
+        rawDirection = direction.normalized;
     }
 
     public Joueur(Joueur joueur)
@@ -38,6 +40,7 @@ public class Joueur
         this.counter = 0;
         this.center = joueur.center;
         this.sizeBound = joueur.sizeBound;
+        this.rawDirection = joueur.rawDirection;
     }
     
     
@@ -48,8 +51,15 @@ public class Joueur
     
     public  void setDirection(Vector2 dir)
     {
-        this.direction = dir.normalized;   
+        this.rawDirection = dir;
+        this.direction = dir.normalized * this.moveSpeed;   
     }
+
+    public Vector2 getRawDirection( )
+    {
+        return this.rawDirection;
+    }
+    
     
     public Vector2 getPosition()
     {

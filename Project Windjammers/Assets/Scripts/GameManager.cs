@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
         private InputManager inputManager;
         private GameState gameState;
         private MCTSManager mcts;
-        
+        private Vector2 tempVector;
         
         [HideInInspector]
         public List<Action> actions;
@@ -291,13 +291,13 @@ public class GameManager : MonoBehaviour
                                 
                                 gameState.frisbee.setCatched(false);
                                 gameState.moveRandom = true;
-                                throwFrisbee(gameState.frisbee,new Vector2(-1,gameState.j2.getDirection().y));
+                                throwFrisbee(gameState.frisbee,new Vector2(-1,gameState.j2.getRawDirection().y));
                         }
                         else
                         {
                                 gameState.frisbee.setCatched(false);
                                 gameState.movePlayer = true;
-                                throwFrisbee(gameState.frisbee,new Vector2(1,this.gameState.j1.getDirection().y));
+                                throwFrisbee(gameState.frisbee,new Vector2(1,this.gameState.j1.getRawDirection().y));
                         }
                 }
                 
@@ -471,11 +471,13 @@ public class GameManager : MonoBehaviour
         
         private void MoveFrisbee(Frisbee frisbee)
         {
-                frisbee.setPosition( (Vector3)frisbee.getPosition() + (Vector3)frisbee.GetDirection().normalized*0.02f*frisbee.Speed);
+                frisbee.setPosition( frisbee.getPosition() + frisbee.getSpeededDirection() *0.02f);
               
                 if(InterfaceGameState.instance.getGameManager().IsCollide(frisbee.getPosition(),Vector2.zero, WidthPlayer,HightPlayer))
-                {    
-                        frisbee.setDirection(new Vector2(frisbee.GetDirection().x, -frisbee.GetDirection().y));
+                {
+                        tempVector.x = frisbee.GetDirection().x;
+                        tempVector.y = -frisbee.GetDirection().y;
+                        frisbee.setDirection(tempVector);
             
                 }
         }
@@ -507,7 +509,7 @@ public class GameManager : MonoBehaviour
                 return find;
         }
 
-        public bool IsCollide(Vector3 originPoint, Vector2 center, float width,float height)
+        public bool IsCollide(Vector2 originPoint, Vector2 center, float width,float height)
         {
                 
                 
@@ -566,11 +568,11 @@ public class GameManager : MonoBehaviour
 
 
                 if (!IsCollide(
-                        ((Vector3) joueur.getPosition() +
-                         (Vector3) joueur.getDirection().normalized * joueur.moveSpeed * 0.02f),
+                        (joueur.getPosition() +
+                         joueur.getDirection() * 0.02f),
                         CenterPoint[0].position, (WidthPlayer) / 2f, HightPlayer-1f ))
                 {
-                        joueur.setPosition( (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection().normalized * joueur.moveSpeed * 0.02f);        
+                        joueur.setPosition( joueur.getPosition() + joueur.getDirection() * 0.02f);        
                 }
                 
                 
@@ -621,9 +623,9 @@ public class GameManager : MonoBehaviour
                 if (joueur.counter > 0)
                 {
                         
-                        if (!IsCollide(((Vector3)joueur.getPosition() + (Vector3)joueur.getDirection() * joueur.moveSpeed * 0.02f ),joueur.center,joueur.sizeBound.x,joueur.sizeBound.y))
+                        if (!IsCollide((joueur.getPosition() + joueur.getDirection() * 0.02f ),joueur.center,joueur.sizeBound.x,joueur.sizeBound.y))
                         { 
-                                joueur.setPosition(   (Vector3)joueur.getPosition() + (Vector3)joueur.getDirection() * joueur.moveSpeed * 0.02f) ;
+                                joueur.setPosition(   joueur.getPosition() + joueur.getDirection() * 0.02f) ;
                         }
 
                         return true;
