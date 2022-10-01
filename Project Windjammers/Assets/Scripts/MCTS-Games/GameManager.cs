@@ -8,6 +8,7 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Unity.Jobs;
 using Unity.VisualScripting;
+using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
 using UnityEngine.Rendering.PostProcessing;
 
@@ -19,39 +20,40 @@ public struct Action
 
 public class GameManager : MonoBehaviour
 {
-        
-        public List<BoxCollider2D> walls;
-        public List<Transform> CenterPoint;
-        
-        [HideInInspector]
-        public float HightPlayer = 0;
-        [HideInInspector]
-        public float WidthPlayer = 0;
-        
-        private List<Bounds> bounds;
+        // Gestion du jeu 
         public Transform j1;
         public Transform j2;
         public Transform frisbee;
-        
-        private InputManager inputManager;
         private GameState gameState;
         private MCTSManager mcts;
-        private Vector2 tempVector;
+        public Action MCTSaction; // Action trouvé par le MCTS 
+        public List<Action> actions; // listes des actions possibles
+        private float DELTA_TIME = 0.02f; // Mon DELTA_TIME Custom
+        
+        
+        
+        
+        public List<BoxCollider2D> walls; // les murs pour la collisions, ils me servent à récupérer la taille de la zone de jeu
+        public List<Transform> CenterPoint; // me permet de trouver les point central pour la calcul des collisions, vu qu'il ne sagit pas du centre du monde ni de la position initial des joueurs
+        
         
         [HideInInspector]
-        public List<Action> actions;
-
-        public Action MCTSaction;
-
-        public AudioSource Hitball;
-        public AudioSource Sifflet;
-        public AudioClip AC;
+        public float HeightPlayer = 0; // 
+        [HideInInspector]
+        public float WidthPlayer = 0;
+        
+        
+        public AudioSource Hitball; // son de frappe de la balle
+        public AudioSource Sifflet; // son du sifflet
+        public AudioClip AC; // son des moutons 
         private AudioSource[] LstAC;
+                
+        
+        public GameObject PanelPause; // panel de pause que j'enable
 
-        private float DELTA_TIME = 0.02f;
-
-        public GameObject PanelPause;
-
+        
+        private Vector2 tempVector; // variable temp pour éviter de devoir faire un new dans la simulation
+        private Action tempAction; // variable temp pour éviter de devoir faire un new dans la simulation
         
         
         private void Start()
@@ -61,11 +63,12 @@ public class GameManager : MonoBehaviour
                 gameState.initialposf = frisbee.transform.position;
                 mcts = new MCTSManager();
                 actions = new List<Action>();
-                bounds = new List<Bounds>();
                 gameState.timer = 30;
                 
-                DontDestroyOnLoad(Sifflet.gameObject);
-
+                DontDestroyOnLoad(Sifflet.gameObject); // je ne let destroy pas on load parce que je n'ai pas envie d'avoir de coupure dans le son , mais je destroy tout au menu pour pas avoir des gameobject qui s'empile à l'infini
+                
+                
+                // je créer un tableau d'audio source avec le bruit de mouton, comme ca dès qu'il à un goal je joue pleins de son en même temps
                 LstAC = new AudioSource[5];
                 for (int i = 0; i < 5; i++)
                 {
@@ -74,25 +77,23 @@ public class GameManager : MonoBehaviour
                         LstAC[i] = AS;
                 }
 
-                HightPlayer = walls[^1].bounds.size.y; 
+                HeightPlayer = walls[1].bounds.size.y; 
                 WidthPlayer = walls[0].bounds.size.x;
 
-                gameState.j1.sizeBound = new Vector2(WidthPlayer/2f, HightPlayer);
-                gameState.j2.sizeBound = new Vector2(WidthPlayer/2f, HightPlayer);
+                gameState.j1.sizeBound = new Vector2(WidthPlayer/2f, HeightPlayer);
+                gameState.j2.sizeBound = new Vector2(WidthPlayer/2f, HeightPlayer);
                
+                
+                // les coups possibles de mon agent MCTS
+                
                 actions.Add(new Action(){direction = new Vector2(1,0), time = DELTA_TIME*5 });  
                 actions.Add(new Action(){direction = new Vector2(-1,0), time = DELTA_TIME*5 });  
                 actions.Add(new Action(){direction = new Vector2(0,1), time = DELTA_TIME*5 });  
                 actions.Add(new Action(){direction = new Vector2(0,-1), time = DELTA_TIME*5 });  
                 actions.Add(new Action(){direction = new Vector2(0,0), time = DELTA_TIME*5 });  
                 
-
-                foreach (BoxCollider2D boxes in walls)
-                {
-                        bounds.Add(boxes.bounds);
-                }
-
-
+                
+                // j'initialise mon gamestate
 
                 initializeGame(gameState,false);
                 
@@ -102,22 +103,16 @@ public class GameManager : MonoBehaviour
         {
 
                 gameState.simulation = simulation;
-                gameState.freezeInput = true;
                 gameState.gameStarted = true;
-                gameState.catchedTimer = 3;
-
 
                 if (!gameState.simulation)
                 {
                         gameState.frisbee.setDirection(new Vector2());
-                        
-                      
                         Sifflet.Play();
-
                 }  
                 
                 
-                if (gameState.frisbee.GetDirection() == new Vector2())      
+                if (gameState.frisbee.GetDirection() == new Vector2())      // lance la balle entre les deux joueurs
                 {
                         float random = Random.Range(0, 1f);
                         if (random > .5f) { gameState.frisbee.setDirection((gameState.j1.getPosition() -gameState.frisbee.getPosition()).normalized);}
@@ -131,12 +126,12 @@ public class GameManager : MonoBehaviour
         {
                 
                 
-                if (Input.GetKeyDown(KeyCode.R))
+                if (Input.GetKeyDown(KeyCode.R)) // ptit touche de reset
                 {
                         SceneManager.LoadScene(0);
                 }
                 
-                if (Input.GetKeyUp(KeyCode.Escape))
+                if (Input.GetKeyUp(KeyCode.Escape)) // la pause
                 {
 
 
@@ -156,26 +151,27 @@ public class GameManager : MonoBehaviour
               
 
                 
-                RunFrame(gameState);
+                RunFrame(gameState); // run du jeu à chaque frame
 
         }
         
         private void FixedUpdate()
         {
 
-                RunMovement(gameState);
-                ApplyMovement(gameState);
+                RunMovement(gameState); // run les mouvement
+                ApplyMovement(gameState); // aplique les position au transform
 
         }
 
         public void EmulateOneMove(GameState gameState)
         {
+                // cette fonction est appellé pour bouger dans le Expand seulement pour un coup
                 if (gameState.movePlayer)
                 {
                         Move(gameState.j1);
                 }
                 
-                if ( gameState.moveRandom )
+                if ( gameState.moveAgent )
                 {
                         Move(gameState.j2);
                 }
@@ -185,6 +181,8 @@ public class GameManager : MonoBehaviour
         
         public void RunSimulatedMovement(GameState gameState)
         {
+                // cette fonction est spécialement faite pour la simulation, car elle les deux agents bougent de manière random
+                
                 if (!gameState.simulation) return;
                 
                 if (gameState.movePlayer)
@@ -193,7 +191,7 @@ public class GameManager : MonoBehaviour
                         Move(gameState.j1);
                 }
                 
-                if ( gameState.moveRandom )
+                if ( gameState.moveAgent )
                 {
                         SetRandomAction(gameState.j2,actions);
                         Move(gameState.j2);
@@ -206,16 +204,17 @@ public class GameManager : MonoBehaviour
         public void RunMovement(GameState gameState)
         {
                 
+                
                 if (gameState.movePlayer)
                 {
                         MovePlayer(gameState.j1);
                 }
                 
-                if ( gameState.moveRandom )
+                if ( gameState.moveAgent )
                 {
                         if (InterfaceGameState.IA && DELTA_TIME > 0)
                         {
-                                SetMCTSACTION(gameState.j2,gameState,MCTSaction);
+                                SetMCTSACTION(gameState.j2,gameState,MCTSaction); // Appelle du cmts
                         }
                         else
                         {
@@ -226,6 +225,7 @@ public class GameManager : MonoBehaviour
                   
                 }
                 
+                
                 MoveFrisbee(gameState.frisbee);
              
         }
@@ -233,12 +233,14 @@ public class GameManager : MonoBehaviour
         
         public void RunFrame(GameState gameState)
         {
-                bool b = Goal(gameState).Item1;
+                bool b = false;
                 
                 if (!b && gameState.endResetGame)
                 {
                         ManageCatch(gameState);
                 }
+                
+               Goal(gameState);
 
                 gameState.timer -= DELTA_TIME / 3f;
                 
@@ -298,7 +300,7 @@ public class GameManager : MonoBehaviour
                              
                                 
                                 gameState.frisbee.setCatched(false);
-                                gameState.moveRandom = true;
+                                gameState.moveAgent = true;
                                 throwFrisbee(gameState.frisbee,new Vector2(-1,gameState.j2.getRawDirection().y));
                         }
                         else
@@ -310,8 +312,8 @@ public class GameManager : MonoBehaviour
                 }
                 
                 
-                
-                if (isCatch(gameState.j1, gameState.frisbee) && gameState.oldThrower != gameState.j1 && gameState.endResetGame  )
+           
+                if (isCatch(gameState.j1, gameState.frisbee) && gameState.oldThrower != gameState.j1  )
                 {
                         gameState.frisbee.setCatched(true);
                         gameState.frisbee.setDirection(new Vector2(0, 0));
@@ -323,7 +325,7 @@ public class GameManager : MonoBehaviour
 
                 }
  
-                if (isCatch(gameState.j2, gameState.frisbee)  && gameState.oldThrower != gameState.j2 && gameState.endResetGame  )
+                if (isCatch(gameState.j2, gameState.frisbee)  && gameState.oldThrower != gameState.j2  )
                 {
                         
                         StopAllCoroutines();
@@ -338,21 +340,22 @@ public class GameManager : MonoBehaviour
                 if (gameState.frisbee.getIsCatched() && gameState.gameStarted)
                 {
                         gameState.movePlayer = true;
-                        gameState.freezeInput = false;
                         gameState.gameStarted = false;
-                        gameState.moveRandom = true;
+                        gameState.moveAgent = true;
                 }
                 
         }
         
         public void resetGame(GameState gameState)
         {
-                gameState.freezeInput = true;
+      
                 gameState.oldThrower = null;
+                gameState.frisbee.setCatched(false);
                 gameState.gameStarted = false;
                 gameState.movePlayer = false;
-                gameState.moveRandom = false;
-               
+                gameState.moveAgent = false;
+    
+                
                 for (int i = 0; i < 5; i++)
                 {
                         
@@ -365,18 +368,21 @@ public class GameManager : MonoBehaviour
                 StartCoroutine(replace(gameState));
              
                 gameState.gameStarted = true;
-                gameState.endResetGame = false;
+          
                
         }
         
         IEnumerator replace(GameState gameState)
         {
-          
+                float c = 1f;
                 while (
                         gameState.j1.getPosition() != new Vector2(-15, 0) ||
-                       gameState.j2.getPosition() != new Vector2(15, 0)
+                       gameState.j2.getPosition() != new Vector2(15, 0) || c >= 0
                        )
                 {
+                        c -= Time.deltaTime;
+                        gameState.endResetGame = false;
+                        gameState.frisbee.setDirection(new Vector2(0,0));
                         gameState.j1.setPosition( Vector2.MoveTowards(gameState.j1.getPosition(),
                                 new Vector2(-15, 0), DELTA_TIME * 15f));
                         
@@ -391,9 +397,9 @@ public class GameManager : MonoBehaviour
                 Sifflet.pitch = Random.Range(0.8f, 1.2f);
                 
       
-                
+                gameState.frisbee.setDirection(new Vector2(0,0));
                 float random = Random.Range(0, 1f);
-                gameState.endResetGame = true;
+             
                 if (random > 0.5f)
                 {
                         gameState.frisbee.setDirection( (gameState.j1.getPosition() - gameState.frisbee.getPosition()).normalized);
@@ -403,12 +409,14 @@ public class GameManager : MonoBehaviour
                         gameState.frisbee.setDirection( (gameState.j2.getPosition() - gameState.frisbee.getPosition()).normalized);
                 }
                 
+                gameState.endResetGame = true;
                 
         }
         
 
         public (bool,string) Goal(GameState gameState)
         {
+                // permet de dire si le joeuur à fini la partie ou non
                 Frisbee frisbee = gameState.frisbee;
                 Score scoreJ1 = gameState.j1.getScore();
                 Score scoreJ2 = gameState.j2.getScore();
@@ -431,7 +439,7 @@ public class GameManager : MonoBehaviour
                                 
                         }
 
-                        return (true, "Goal");
+                        return (true, "Timer");
                 }
                 
                 
@@ -493,7 +501,7 @@ public class GameManager : MonoBehaviour
         {
                 frisbee.setPosition( frisbee.getPosition() + frisbee.getSpeededDirection() *DELTA_TIME);
               
-                if(IsCollide(frisbee.getPosition(),Vector2.zero, WidthPlayer,HightPlayer))
+                if(IsCollide(frisbee.getPosition(),Vector2.zero, WidthPlayer,HeightPlayer))
                 {
                         tempVector.x = frisbee.GetDirection().x;
                         tempVector.y = -frisbee.GetDirection().y;
@@ -530,7 +538,7 @@ public class GameManager : MonoBehaviour
 
         private void throwFrisbee(Frisbee frisbee, Vector2 direction)
         {
-             
+             // permet de lancer la balle
                 frisbee.setDirection(direction);
                 
 
@@ -550,7 +558,7 @@ public class GameManager : MonoBehaviour
                         gameState.InputPress = false;
                 }
                 
-                if (gameState.InputPress || gameState.freezeInput) return;
+                if (gameState.InputPress || !gameState.endResetGame) return;
                 
 
                 joueur.setDirection(new Vector2(
@@ -561,7 +569,7 @@ public class GameManager : MonoBehaviour
                 if (!IsCollide(
                         (joueur.getPosition() +
                          joueur.getDirection() * DELTA_TIME),
-                        CenterPoint[0].position, (WidthPlayer) / 2f, HightPlayer-1f ))
+                        CenterPoint[0].position, (WidthPlayer) / 2f, HeightPlayer-1f ))
                 {
                         joueur.setPosition( joueur.getPosition() + joueur.getDirection() * DELTA_TIME);        
                 }
@@ -574,23 +582,23 @@ public class GameManager : MonoBehaviour
         {
                 if (joueur.counter > 0) return;
                 
-                gameState.randomAction = actions[Random.Range(0, actions.Count)];
+                tempAction = actions[Random.Range(0, actions.Count)];
                 
-                joueur.counter = gameState.randomAction.time;
-                joueur.setDirection(gameState.randomAction.direction);
+                joueur.counter = tempAction.time;
+                joueur.setDirection(tempAction.direction);
                 
         }
 
         public void SetMCTSACTION(Joueur joueur,GameState gameState,Action a)
         {
-              
-             
+                
                 if (joueur.counter > 0) return;
                 
                 if (!gameState.simulation )
                 { 
-                        GC.Collect();
-                       MCTSaction = mcts.ComputeMCTS(joueur, InterfaceGameState.instance.CreateInstance(gameState));
+                       GC.Collect();
+                       
+                       MCTSaction = mcts.ComputeMCTS(joueur, InterfaceGameState.instance.CreateInstance(gameState)); // <== le truc qui prend 90% des perfs
                       
                 }
 

@@ -3862,6 +3862,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5555dc5d2778377478ac1b338ac28ca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  frisbee:
+    Speed: 0
+    position: {x: 0, y: 0}
+    direction: {x: 0, y: 0}
+    joueur:
+      position: {x: 0, y: 0}
+      direction: {x: 0, y: 0}
+      score:
+        points: 0
+        setCount: 0
+      moveSpeed: 0
+      counter: 0
+      PlayerTag: 
+      center: {x: 0, y: 0}
+      sizeBound: {x: 0, y: 0}
+      rawDirection: {x: 0, y: 0}
+    isCatched: 0
+    sDirection: {x: 0, y: 0}
+  scoreJ1:
+    points: 0
+    setCount: 0
+  scoreJ2:
+    points: 0
+    setCount: 0
+  initialposf: {x: 0, y: 0, z: 0}
 --- !u!1 &1006336611
 GameObject:
   m_ObjectHideFlags: 0
@@ -5972,20 +5997,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 661ecd3a577285b41b6f3905d6c93d53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  j1: {fileID: 955130783}
+  j2: {fileID: 882184789}
+  frisbee: {fileID: 1276752552}
   walls:
   - {fileID: 1818128712}
-  - {fileID: 341749221}
-  - {fileID: 998787027}
-  - {fileID: 1064763246}
   - {fileID: 850076167}
   CenterPoint:
   - {fileID: 277515779}
   - {fileID: 384186501}
-  HightPlayer: 0
+  HeightPlayer: 0
   WidthPlayer: 0
-  j1: {fileID: 955130783}
-  j2: {fileID: 882184789}
-  frisbee: {fileID: 1276752552}
   Hitball: {fileID: 1727119194}
   Sifflet: {fileID: 1124909073}
   AC: {fileID: 8300000, guid: 501970f1ffa307442a0ae3c75d3afd86, type: 3}

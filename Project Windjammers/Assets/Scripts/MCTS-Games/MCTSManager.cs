@@ -29,17 +29,19 @@ public class MCTSnode
 
 public class MCTSManager
 {
-    private const int NUMBER_TEST = 200; // 2000
+    private const int NUMBER_TEST = 1500; // 2000
     private const int NUMBER_SIMULATION = 30;
 
-    private MCTSnode[] lstNodes;
+    private MCTSnode[] lstNodes; // ma liste de node
     private GameManager GameManager;
     //private List<MCTSnode> lstnodes;
     private Joueur joueur;
-    private int currentidx;
+    private int currentidx; // pour savoir le max de mon lstnode
     public MCTSManager()
     {
         lstNodes = new MCTSnode[NUMBER_TEST + 500] ;
+        
+        GameManager = InterfaceGameState.instance.gameManager; // je récupère le gameManager
         
         for (int i = 0; i < lstNodes.Length; i++)
         {
@@ -47,6 +49,8 @@ public class MCTSManager
         }
         
     }
+    
+    // clear les nodes que j'ai utilisé dans le pulling
 
     public void ClearNode()
     {
@@ -69,10 +73,8 @@ public class MCTSManager
     {
         
         ClearNode();
-        GameManager = InterfaceGameState.instance.gameManager;
-        this.joueur = joueur;
-        
-        
+
+        this.joueur = joueur; // je récupère le joueur que je veux MCTSisé
         
         GameManager.initializeGame(gameState,true);
         gameState.simulation = true;
@@ -86,17 +88,19 @@ public class MCTSManager
         {
             if (lstNodes[0].FullyExpanded) break;
             
-            MCTSnode selectedNode = Selection();
+            MCTSnode selectedNode = Selection(); // <==== la selection
             
             Assert.AreNotEqual(selectedNode.childrens.Count,GameManager.actions.Count);
             Assert.AreNotEqual(selectedNode.FullyExpanded,true);
-            MCTSnode newNode = Expland(selectedNode,currentidx);
+            MCTSnode newNode = Expland(selectedNode,currentidx); // <= Expand
             
-            int victoire = SimulateGame(newNode, newNode.action);
-            Backpropagation(newNode,victoire);
+            int victoire = SimulateGame(newNode, newNode.action); // <== la el famoso simulation 
+            Backpropagation(newNode,victoire); // la back propagation
             currentidx++;
         }
 
+        
+        // ca me permet de récupérer le noeuf avec le plus grand ratio de victoire
         float ratio = float.MinValue;
         MCTSnode n = null;
         for (int i = 0; i < lstNodes[0].childrens.Count; i++)
@@ -124,12 +128,14 @@ public class MCTSManager
         if (ex <= 0.85 || currentidx <= 1)
         {
             int c = 0;
+            
+            // cherche une node qui ne soit pas Fully expanded et qui n'ai pas déjà fait tout les coup possibles
             do
             {
                 c++;
                 if (c >= (currentidx+1)*20)
                 {
-                    Debug.LogError("ca");
+                    Debug.LogError("garde de fou");
                     break;
                     
                 }
@@ -142,6 +148,8 @@ public class MCTSManager
         }
         else
         {
+            
+            // cherche le meilleur neud
             float maxRatio = float.MinValue;
             float c = 0;
             for (int i = 0; i < currentidx; i++)
@@ -170,7 +178,7 @@ public class MCTSManager
         Assert.AreNotEqual(node.childrens.Count,GameManager.actions.Count);
         Action ActionToplay;
         
-        
+        // cherche un coup que tu n'as pas déjà joué
         int c = 0;
         do
         {
@@ -191,13 +199,14 @@ public class MCTSManager
         } while (findSameInput(node,ActionToplay));
         
         
-        SimulateAction(node,ActionToplay); // Pour jouer un coup dans la simulation
-        
-
         lstNodes[current+1].parent = node;
         lstNodes[current+1].GameState = InterfaceGameState.instance.CreateInstance(node.GameState);
         lstNodes[current+1].action = ActionToplay;
         node.childrens.Add(lstNodes[current+1]);
+        MCTSnode n = lstNodes[current + 1];
+        
+        
+        SimulateAction(n,ActionToplay); // Pour jouer un coup 
         
 
         return  lstNodes[current+1];
@@ -205,7 +214,7 @@ public class MCTSManager
     
     bool findSameInput(MCTSnode root,Action action)
     {
-        // cette fonction permet de trouver une action dans les enfant de la node
+        // cette fonction permet de trouver une action
         bool trouver = false;
         int c = 0;
         if (root != null)
@@ -243,6 +252,8 @@ public class MCTSManager
         
         GameState gameState = node.GameState;
         
+        
+        // ca me permet de trouver quel agent je dois bouger et de quel façon
         Joueur jmcts = node.GameState.j1.PlayerTag == this.joueur.PlayerTag
             ? node.GameState.j1
             : node.GameState.j2;
@@ -251,13 +262,13 @@ public class MCTSManager
             ? node.GameState.j1
             : node.GameState.j2;
         
-        GameManager.SetAction(jmcts, action);
+        GameManager.SetAction(jmcts, action); 
         GameManager.SetRandomAction(Jplayer,GameManager.actions);
         int c = 0;
         
         Assert.AreEqual(gameState.simulation,true);
 
-        
+        // tant que le joueur agent n'a pas fini de bouger, on déroule la simulation
         while (jmcts.counter > 0)
         {
             c++;
@@ -268,7 +279,7 @@ public class MCTSManager
                 break;
             }
           
-
+        
             GameManager.RunFrame(gameState);
             GameManager.EmulateOneMove(gameState);
         }
@@ -290,9 +301,8 @@ public class MCTSManager
             
             float c = 0;
             bool finish = false;
-            GameManager = InterfaceGameState.instance.getGameManager();
             
-            
+
             while ( !finish)
             {
                 c++;
@@ -302,14 +312,14 @@ public class MCTSManager
                     Debug.LogError("garde fou");
                     break;
                 }
-                
+                // simule le jeu
                 GameManager.RunFrame(gameState);
                 GameManager.RunSimulatedMovement(gameState);
                  
                 (finish,j) = InterfaceGameState.instance.getGameManager().Goal(gameState);
                 
                 
-                Assert.AreNotEqual(c,15000);
+               // Assert.AreNotEqual(c,15000);
                 
             }
 
@@ -317,10 +327,11 @@ public class MCTSManager
             {
                 numberVictoire++;
             }
-            else if(j != "goal")
+            else if(j != "Timer")
             {
                 numberVictoire--;
             }
+            
         
         }
 
@@ -333,14 +344,20 @@ public class MCTSManager
     
     public void Backpropagation(MCTSnode node,int victory)
     {
+        
+        //back propagation
+        
         MCTSnode n = node.parent;
-
+        
+        
+        // si après le coup jouer dans l'expand, le partie est fini, alors c'est fully expanded
         if (GameManager.Goal(node.GameState).Item1)
         {
             node.FullyExpanded = true;
         }
 
-
+    
+        // on fait remonter le nombre de victoire et de simulation
         int c = 0;
         while (n != null)
         {

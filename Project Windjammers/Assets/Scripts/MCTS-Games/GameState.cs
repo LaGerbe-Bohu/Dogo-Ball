@@ -14,21 +14,17 @@ public class GameState
 
     public Frisbee frisbee;
     
-    public Coroutine co;
     public bool InputPress = false;
 
-    public bool moveRandom;
-    public bool gameStarted ;
-    public bool movePlayer = false;
-    public bool freezeInput = false;
-    public bool simulation = false;
-    public Action randomAction;
+    public bool moveAgent; // Dit sit mon agent peut bouger
+    public bool gameStarted ; // dit si la partie à commencé
+    public bool movePlayer = false; // dit sir mon player peut bouger
+    public bool simulation = false; // dit si ce gamestage est une simulation 
+    public bool endResetGame = true; // dit si les joueurs ont fini de se mettre en place
     
-    public Joueur oldThrower;
-    public Vector2 initialposf;
-    public bool endResetGame = true;
-    public float catchedTimer;
-    
+    public Joueur oldThrower; // ancien tireur du frisbee pour éviter que le joueur puisse taper plusieurs fois dans la balle
+    public Vector2 initialposf; // position de base de frisbee
+  
     
     public GameState(Joueur j1, Joueur j2,Frisbee frisbee, int timer,int setCurrent)
     {
@@ -43,15 +39,15 @@ public class GameState
         this.j2.getScore().setCount = InterfaceGameState.J2set;
         
         
-        this.moveRandom = false;
+        this.moveAgent = false;
         this.gameStarted = false;
         this.oldThrower = null;
         this.endResetGame = true;
         this.movePlayer = false;
-        this.freezeInput = false;
         this.simulation = false;
     }
     
+    // constructeur par copie
     public GameState(GameState gameState)
     {
       
@@ -65,14 +61,13 @@ public class GameState
         this.j1.getScore().setCount = InterfaceGameState.J1set;
         this.j2.getScore().setCount = InterfaceGameState.J2set;
 
-        this.moveRandom = gameState.moveRandom;
+        this.moveAgent = gameState.moveAgent;
         this.gameStarted = gameState.gameStarted;
         this.oldThrower = gameState.oldThrower;
         this.endResetGame = gameState.endResetGame;
         this.movePlayer = gameState.movePlayer;
-        this.freezeInput = gameState.freezeInput;
         this.simulation = gameState.simulation;
-        this.randomAction = gameState.randomAction;
+
     }
 
 
