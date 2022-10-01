@@ -10,7 +10,7 @@ public class InterfaceGameState : MonoBehaviour
     private int timer;
     private int setCurrent;
 
-    public static bool IA = false;
+    public static bool IA = true;
     public Joueur j1;
     public Joueur j2;
     
