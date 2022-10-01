@@ -41,7 +41,9 @@ public class GameManager : MonoBehaviour
         public List<Action> actions;
 
         public Action MCTSaction;
-        
+
+        public AudioSource Hitball;
+        public AudioSource Sifflet;
    
         
         private void Start()
@@ -68,16 +70,6 @@ public class GameManager : MonoBehaviour
                 actions.Add(new Action(){direction = new Vector2(0,-1), time = .02f*5 });  
                 actions.Add(new Action(){direction = new Vector2(0,0), time = .02f*5 });  
                 
-                for (int x = -1; x < 2 ; x++)
-                {
-                        for (int y = -1; y < 2; y++)
-                        {
-                              
-                             //   actions.Add(new Action(){direction = new Vector2(x,y), time = .016f*5 });  
-                                
-                        }
-                        
-                }
 
                 foreach (BoxCollider2D boxes in walls)
                 {
@@ -102,6 +94,10 @@ public class GameManager : MonoBehaviour
                 if (!gameState.simulation)
                 {
                         gameState.frisbee.setDirection(new Vector2());
+                        
+                      
+                        Sifflet.Play();
+
                 }  
                 
                 
@@ -249,45 +245,15 @@ public class GameManager : MonoBehaviour
                 
                 if (gameState.frisbee.getIsCatched() )
                 {
-                        
-                        if (gameState.frisbee.getJoueur() == gameState.j1 && !gameState.simulation && false )
+                        if (!gameState.simulation)
                         {
-                                gameState.catchedTimer -= 0.02f;
-                                if ( (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.RightArrow)) || (Input.GetKey(KeyCode.Space)) || gameState.catchedTimer<=0)
-                                {
-                                        gameState.freezeInput = false;
-                                        gameState.frisbee.setCatched(false);
-                                        throwFrisbee(gameState.frisbee,new Vector2(1,0));
-                                        gameState.catchedTimer = 3;
-                                        gameState.movePlayer = true;
-                                        
-                                        
-                                        
-                                }
-                        
-                                if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.DownArrow) )
-                                {       
-                                        gameState.freezeInput = false;
-                                        gameState.frisbee.setCatched(false);
-                                        throwFrisbee(gameState.frisbee, new Vector2(1, -1));
-                                        gameState.catchedTimer = 3;
-                                        gameState.movePlayer = true;
-                                    
-                                }
-                        
-                                if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.UpArrow) )
-                                {
-                                        gameState.freezeInput = false;
-                                        gameState.frisbee.setCatched(false);
-                                        throwFrisbee(gameState.frisbee,new Vector2(1,1));
-                                        gameState.catchedTimer = 3;
-                                        gameState.movePlayer = true;
-                                     
-                                }
-                                
+                                Hitball.Play();
+                                Hitball.pitch = Random.Range(1.1f, 1.2f);
                         }
-                        else if(gameState.frisbee.getJoueur() == gameState.j2)
+                        
+                        if(gameState.frisbee.getJoueur() == gameState.j2)
                         {
+                             
                                 
                                 gameState.frisbee.setCatched(false);
                                 gameState.moveRandom = true;
@@ -349,7 +315,7 @@ public class GameManager : MonoBehaviour
                 
                 StopAllCoroutines();
                 StartCoroutine(replace(gameState));
-                
+             
                 gameState.gameStarted = true;
                 gameState.endResetGame = false;
                
@@ -372,6 +338,9 @@ public class GameManager : MonoBehaviour
                         
                         yield return new WaitForFixedUpdate();
                 }
+                
+                Sifflet.Play();
+                Sifflet.pitch = Random.Range(0.8f, 1.2f);
                 
                 float random = Random.Range(0, 1f);
                 gameState.endResetGame = true;
@@ -409,6 +378,7 @@ public class GameManager : MonoBehaviour
                                 frisbee.setPosition(gameState.initialposf);
                                 gameState.timer = 30;
                                 InterfaceGameState.instance.getGameManager().resetGame(gameState);
+                                
                         }
 
                         return (true, "Goal");
@@ -616,7 +586,7 @@ public class GameManager : MonoBehaviour
                 
         }
         
-        private bool Move(Joueur joueur)
+        private void Move(Joueur joueur)
         {
                 joueur.counter -= 0.02f;
                 
@@ -628,18 +598,10 @@ public class GameManager : MonoBehaviour
                                 joueur.setPosition(   joueur.getPosition() + joueur.getDirection() * 0.02f) ;
                         }
 
-                        return true;
+                    
                 }
                 
-                return false;
         }
-        
-        
-        
-        
-        
-
-        
         
         
 }

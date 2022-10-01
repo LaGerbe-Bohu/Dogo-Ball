@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2defc863a04ee72439b1f8e7ef62fded
+guid: a46635d8e955be943b9babd06dfdbb78
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -70,7 +70,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -101,29 +101,17 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: dog-Sheet_0
+      name: sheep-Sheet_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 16
-        height: 13
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,20 +119,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 53385b3fe8891b44c96fa1455d3b8753
-      internalID: -371022410
+      spriteID: b01ba3f6c12c57840a9fd4c5a468fa65
+      internalID: -556020959
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dog-Sheet_1
+      name: sheep-Sheet_1
       rect:
         serializedVersion: 2
         x: 16
         y: 0
         width: 16
-        height: 13
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -152,20 +140,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aace29d73e8cb2047867d2a4e0d3bb8b
-      internalID: 38293196
+      spriteID: d001b4c960757b843b551c1cebab13c6
+      internalID: -237255506
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dog-Sheet_2
+      name: sheep-Sheet_2
       rect:
         serializedVersion: 2
         x: 32
         y: 0
         width: 16
-        height: 13
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -173,20 +161,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b2c8115d3e367eb4fad56a561d764c80
-      internalID: 1817644678
+      spriteID: b9a8eadd493b22c4c9706366d2645797
+      internalID: 1238877850
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dog-Sheet_3
+      name: sheep-Sheet_3
       rect:
         serializedVersion: 2
         x: 48
         y: 0
         width: 16
-        height: 13
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -194,20 +182,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 87ce4d587d7937f4fa09b40333bae211
-      internalID: 1482840975
+      spriteID: 2911c9661d12252488961d57f3bd1252
+      internalID: 1904014772
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dog-Sheet_4
+      name: sheep-Sheet_4
       rect:
         serializedVersion: 2
         x: 64
         y: 0
         width: 16
-        height: 13
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -215,20 +203,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6171b8117e33b38449254674afd5fc7c
-      internalID: -73377401
+      spriteID: e43585f10107d1741818e637d1b62105
+      internalID: -1779405314
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dog-Sheet_5
+      name: sheep-Sheet_5
       rect:
         serializedVersion: 2
         x: 80
         y: 0
         width: 16
-        height: 13
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -236,20 +224,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7c64f5956b370884682cf6efd380670f
-      internalID: 284127934
+      spriteID: 08bf6f2a1a609c744a0f3747c55d2daa
+      internalID: 1251287849
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dog-Sheet_6
+      name: sheep-Sheet_6
       rect:
         serializedVersion: 2
         x: 96
         y: 0
         width: 16
-        height: 13
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -257,8 +245,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a0b46cdf0e50ce9489ec5ab85c20e6ce
-      internalID: 669429055
+      spriteID: c9c9c4bb52d8b26418ea9b500ad9d7c8
+      internalID: -1130809340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sheep-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d6ff16c093c5634195e2c2c018cb799
+      internalID: -1498505870
       vertices: []
       indices: 
       edges: []
@@ -266,7 +275,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 9ca097faaba7d0c419a9e0f7565a0322
+    spriteID: 55dd001373fcb224eacab0bfcdf1f556
     internalID: 0
     vertices: []
     indices: 
@@ -274,13 +283,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      dog-Sheet_1: 38293196
-      dog-Sheet_4: -73377401
-      dog-Sheet_6: 669429055
-      dog-Sheet_3: 1482840975
-      dog-Sheet_5: 284127934
-      dog-Sheet_2: 1817644678
-      dog-Sheet_0: -371022410
+      sheep-Sheet_4: -1779405314
+      sheep-Sheet_7: -1498505870
+      sheep-Sheet_5: 1251287849
+      sheep-Sheet_1: -237255506
+      sheep-Sheet_3: 1904014772
+      sheep-Sheet_6: -1130809340
+      sheep-Sheet_0: -556020959
+      sheep-Sheet_2: 1238877850
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

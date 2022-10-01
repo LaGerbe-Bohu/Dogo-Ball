@@ -42,12 +42,12 @@ public class Party : MonoBehaviour
     
         if (gameState.j1.getScore().setCount >= 3)
         {
-            victoryphrase = "Vous avez gagné avec un score de : " + gameState.j1.getScore().setCount + " à " + gameState.j2.getScore().setCount;
+            victoryphrase = "Vous avez gagne avec un score de : " + gameState.j1.getScore().setCount + " a " + gameState.j2.getScore().setCount;
             endgame = true;
         }
         if (gameState.j2.getScore().setCount >= 3)
         {
-            victoryphrase = "Vous avez perdu avec un score de : " + gameState.j2.getScore().setCount + " à " + gameState.j1.getScore().setCount;
+            victoryphrase = "Vous avez perdu avec un score de : " + gameState.j2.getScore().setCount + "a " + gameState.j1.getScore().setCount;
             endgame = true;
         }
     }
@@ -65,7 +65,7 @@ public class Party : MonoBehaviour
             else {
                 gameTime = 0;
             }
-            gameTimetxt.text = gameState.timer.ToString("F2");
+            gameTimetxt.text =((int)(gameState.timer)).ToString();
             player1score.text = j1.setCount.ToString()+" / "+j1.points.ToString();
             player2score.text = j2.setCount.ToString()+" / "+j2.points.ToString();
         }
@@ -97,7 +97,7 @@ public class Party : MonoBehaviour
             else
             {
                 countdowntxt.text = victoryphrase;
-                countdowntxt.fontSize = 15;
+                countdowntxt.fontSize = 10;
                 button.SetActive(true);
             }
             
