@@ -7,8 +7,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Unity.Jobs;
+using Unity.VisualScripting;
 using Random = UnityEngine.Random;
-
+using UnityEngine.Rendering.PostProcessing;
 
 public struct Action
 {
@@ -44,7 +45,14 @@ public class GameManager : MonoBehaviour
 
         public AudioSource Hitball;
         public AudioSource Sifflet;
-   
+        public AudioClip AC;
+        private AudioSource[] LstAC;
+
+        private float DELTA_TIME = 0.02f;
+
+        public GameObject PanelPause;
+
+        
         
         private void Start()
         {
@@ -56,7 +64,15 @@ public class GameManager : MonoBehaviour
                 bounds = new List<Bounds>();
                 gameState.timer = 30;
                 
-                
+                DontDestroyOnLoad(Sifflet.gameObject);
+
+                LstAC = new AudioSource[5];
+                for (int i = 0; i < 5; i++)
+                {
+                        AudioSource AS =   Sifflet.AddComponent<AudioSource>();
+                        AS.clip = AC;
+                        LstAC[i] = AS;
+                }
 
                 HightPlayer = walls[^1].bounds.size.y; 
                 WidthPlayer = walls[0].bounds.size.x;
@@ -64,11 +80,11 @@ public class GameManager : MonoBehaviour
                 gameState.j1.sizeBound = new Vector2(WidthPlayer/2f, HightPlayer);
                 gameState.j2.sizeBound = new Vector2(WidthPlayer/2f, HightPlayer);
                
-                actions.Add(new Action(){direction = new Vector2(1,0), time = .02f*5 });  
-                actions.Add(new Action(){direction = new Vector2(-1,0), time = .02f*5 });  
-                actions.Add(new Action(){direction = new Vector2(0,1), time = .02f*5 });  
-                actions.Add(new Action(){direction = new Vector2(0,-1), time = .02f*5 });  
-                actions.Add(new Action(){direction = new Vector2(0,0), time = .02f*5 });  
+                actions.Add(new Action(){direction = new Vector2(1,0), time = DELTA_TIME*5 });  
+                actions.Add(new Action(){direction = new Vector2(-1,0), time = DELTA_TIME*5 });  
+                actions.Add(new Action(){direction = new Vector2(0,1), time = DELTA_TIME*5 });  
+                actions.Add(new Action(){direction = new Vector2(0,-1), time = DELTA_TIME*5 });  
+                actions.Add(new Action(){direction = new Vector2(0,0), time = DELTA_TIME*5 });  
                 
 
                 foreach (BoxCollider2D boxes in walls)
@@ -115,10 +131,30 @@ public class GameManager : MonoBehaviour
         {
                 
                 
-                if (Input.GetKeyDown(KeyCode.A))
+                if (Input.GetKeyDown(KeyCode.R))
                 {
                         SceneManager.LoadScene(0);
                 }
+                
+                if (Input.GetKeyUp(KeyCode.Escape))
+                {
+
+
+                        if (DELTA_TIME <= 0)
+                        {
+                                DELTA_TIME = 0.02f;
+                                PanelPause.SetActive(false);
+                        }
+                        else
+                        {
+                                DELTA_TIME = 0;
+                                PanelPause.SetActive(true);
+                                
+                        }
+                }
+                
+              
+
                 
                 RunFrame(gameState);
 
@@ -177,9 +213,15 @@ public class GameManager : MonoBehaviour
                 
                 if ( gameState.moveRandom )
                 {
-                       
-                   
-                        SetMCTSACTION(gameState.j2,gameState,MCTSaction);
+                        if (InterfaceGameState.IA && DELTA_TIME > 0)
+                        {
+                                SetMCTSACTION(gameState.j2,gameState,MCTSaction);
+                        }
+                        else
+                        {
+                                SetRandomAction(gameState.j2,this.actions);
+                        }
+                      
                         Move(gameState.j2);
                   
                 }
@@ -198,7 +240,7 @@ public class GameManager : MonoBehaviour
                         ManageCatch(gameState);
                 }
 
-                gameState.timer -= 0.02f / 3f;
+                gameState.timer -= DELTA_TIME / 3f;
                 
                 
                 
@@ -311,7 +353,13 @@ public class GameManager : MonoBehaviour
                 gameState.movePlayer = false;
                 gameState.moveRandom = false;
                
-             
+                for (int i = 0; i < 5; i++)
+                {
+                        
+                        LstAC[i].Play();
+                        LstAC[i].pitch = Random.Range(0.9f, 1.7f);
+                        LstAC[i].volume = Random.Range(1, 1.5f);
+                }
                 
                 StopAllCoroutines();
                 StartCoroutine(replace(gameState));
@@ -330,10 +378,10 @@ public class GameManager : MonoBehaviour
                        )
                 {
                         gameState.j1.setPosition( Vector2.MoveTowards(gameState.j1.getPosition(),
-                                new Vector2(-15, 0), 0.02f * 15f));
+                                new Vector2(-15, 0), DELTA_TIME * 15f));
                         
                         gameState.j2.setPosition( Vector2.MoveTowards(gameState.j2.getPosition(),
-                                new Vector2(15, 0), 0.02f * 15f));
+                                new Vector2(15, 0), DELTA_TIME * 15f));
                         
                         
                         yield return new WaitForFixedUpdate();
@@ -341,6 +389,8 @@ public class GameManager : MonoBehaviour
                 
                 Sifflet.Play();
                 Sifflet.pitch = Random.Range(0.8f, 1.2f);
+                
+      
                 
                 float random = Random.Range(0, 1f);
                 gameState.endResetGame = true;
@@ -441,13 +491,15 @@ public class GameManager : MonoBehaviour
         
         private void MoveFrisbee(Frisbee frisbee)
         {
-                frisbee.setPosition( frisbee.getPosition() + frisbee.getSpeededDirection() *0.02f);
+                frisbee.setPosition( frisbee.getPosition() + frisbee.getSpeededDirection() *DELTA_TIME);
               
-                if(InterfaceGameState.instance.getGameManager().IsCollide(frisbee.getPosition(),Vector2.zero, WidthPlayer,HightPlayer))
+                if(IsCollide(frisbee.getPosition(),Vector2.zero, WidthPlayer,HightPlayer))
                 {
                         tempVector.x = frisbee.GetDirection().x;
                         tempVector.y = -frisbee.GetDirection().y;
                         frisbee.setDirection(tempVector);
+                        
+                        
             
                 }
         }
@@ -462,23 +514,7 @@ public class GameManager : MonoBehaviour
                 }
                 return false;
         }
-
-        public bool collisionWall(Vector3 pos)
-        { 
-            
-                bool find = false;
-
-                for (int i = 0; i < bounds.Count; i++)
-                {
-                        if(bounds[i].Contains(pos) )
-                        {
-                                find = true;
-                        }
-                }
-
-                return find;
-        }
-
+        
         public bool IsCollide(Vector2 originPoint, Vector2 center, float width,float height)
         {
                 
@@ -500,22 +536,7 @@ public class GameManager : MonoBehaviour
 
         }       
         
-        public bool collisionWall(Vector3 pos,bool t)
-        {
-                bool find = false;
 
-                for (int i = 0; i < bounds.Count; i++)
-                {
-                        if(bounds[i].Contains(pos) &&  walls[i].name != "MiddleWall")
-                        {
-                                find = true;
-                        }
-                }
-                
-
-                return find;
-        }
-        
         private void MovePlayer(Joueur joueur)
         {
                 float v = Input.GetAxisRaw("Vertical") ;
@@ -539,10 +560,10 @@ public class GameManager : MonoBehaviour
 
                 if (!IsCollide(
                         (joueur.getPosition() +
-                         joueur.getDirection() * 0.02f),
+                         joueur.getDirection() * DELTA_TIME),
                         CenterPoint[0].position, (WidthPlayer) / 2f, HightPlayer-1f ))
                 {
-                        joueur.setPosition( joueur.getPosition() + joueur.getDirection() * 0.02f);        
+                        joueur.setPosition( joueur.getPosition() + joueur.getDirection() * DELTA_TIME);        
                 }
                 
                 
@@ -588,14 +609,14 @@ public class GameManager : MonoBehaviour
         
         private void Move(Joueur joueur)
         {
-                joueur.counter -= 0.02f;
+                joueur.counter -= DELTA_TIME;
                 
                 if (joueur.counter > 0)
                 {
                         
-                        if (!IsCollide((joueur.getPosition() + joueur.getDirection() * 0.02f ),joueur.center,joueur.sizeBound.x,joueur.sizeBound.y))
+                        if (!IsCollide((joueur.getPosition() + joueur.getDirection() * DELTA_TIME ),joueur.center,joueur.sizeBound.x,joueur.sizeBound.y))
                         { 
-                                joueur.setPosition(   joueur.getPosition() + joueur.getDirection() * 0.02f) ;
+                                joueur.setPosition(   joueur.getPosition() + joueur.getDirection() * DELTA_TIME) ;
                         }
 
                     

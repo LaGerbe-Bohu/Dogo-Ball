@@ -9,8 +9,8 @@ public class InterfaceGameState : MonoBehaviour
     public GameState gameState;
     private int timer;
     private int setCurrent;
-    
-    
+
+    public static bool IA;
     public Joueur j1;
     public Joueur j2;
     

@@ -9,6 +9,7 @@ public class Party : MonoBehaviour
     public TMP_Text player1score;
     public TMP_Text player2score;
     public TMP_Text countdowntxt;
+    public GameObject Button;
     public float roundTime;
     private Score j1;
     private Score j2;
@@ -19,12 +20,12 @@ public class Party : MonoBehaviour
     private string victoryphrase;
     private GameObject g;
     private GameObject button;
-
+    
     private GameState gameState;
     // Start is called before the first frame update
     void Start()
     {
-        button = GameObject.Find("return button");      
+        button = Button;
         button.SetActive(false);
         
         gameState = InterfaceGameState.instance.gameState;
@@ -75,14 +76,26 @@ public class Party : MonoBehaviour
                 if (countdown > 0)
                 {
                     countdown -= Time.deltaTime;
-                    if (countdown >= 1)
-                    {
-                        countdowntxt.text = ((int)countdown).ToString();
-                    }
-                    else
-                    {
-                        countdowntxt.text = "GO!";
-                    }
+
+                  
+                        if (countdown >= 1)
+                        {
+                            if (InterfaceGameState.J1set + InterfaceGameState.J2set > 0)
+                            {    
+                                countdowntxt.text = InterfaceGameState.J1set + " -" + InterfaceGameState.J2set;
+                            }
+                            else
+                            {
+                                countdowntxt.text = ((int)countdown).ToString();
+                            }
+                        }
+                        else
+                        {
+                            countdowntxt.text = "GO!";
+                        }
+                    
+                    
+                  
                 }
                 else
                 {
